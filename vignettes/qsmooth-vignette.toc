@@ -1,0 +1,11 @@
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
+\contentsline {section}{\numberline {2}Getting Started}{2}{section.2}
+\contentsline {section}{\numberline {3}Data}{2}{section.3}
+\contentsline {subsection}{\numberline {3.1}bodymapRat Example 1 - Comparing male and female rats in one tissue}{3}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}bodymapRat Example 2 - Comparing two tissues}{4}{subsection.3.2}
+\contentsline {section}{\numberline {4}Using the \texttt {qsmooth() function}}{4}{section.4}
+\contentsline {subsection}{\numberline {4.1}Input for \texttt {qsmooth()}}{4}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Running \texttt {qsmooth()}}{5}{subsection.4.2}
+\contentsline {subsubsection}{\numberline {4.2.1}Using Example 1 data}{5}{subsubsection.4.2.1}
+\contentsline {subsubsection}{\numberline {4.2.2}Using Example 2 data}{7}{subsubsection.4.2.2}
+\contentsline {section}{\numberline {5}SessionInfo}{10}{section.5}
