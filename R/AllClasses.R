@@ -155,14 +155,14 @@ qstats <- function(object, groupFactor, qRange, window = 0.05)
 #' library(bodymapRat)
 #' data(bodymapRat)
 #' # select lung and liver samples, stage 21 weeks, and bio reps
-#' keepColumns = (pData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
+#' keepColumns = (pData(bodymapRat)$organ %in% c("Lung")) & 
 #'          (pData(bodymapRat)$stage == 21) & (pData(bodymapRat)$techRep == 1)
 #' keepRows = rowMeans(exprs(bodymapRat)) > 10 # Filter out low counts
 #' bodymapRat <- bodymapRat[keepRows,keepColumns]
 #' pd <- pData(bodymapRat)
 #' pd$group <- paste(pd$sex, pd$organ, sep="_")
 #' 
-#' qsNorm <- qsmooth(object = exprs(bodymapRat), groupFactor = pd$group)
+#' qsNorm <- qsmooth(object = exprs(bodymapRat), groupFactor = pd$organ)
 #' 
 #' @rdname qsmooth
 #' @export
@@ -187,6 +187,11 @@ qsmooth <- function(object, groupFactor, normFactors = NULL, window = 0.05)
              length of groupFactor.")
     }
    
+    if(length(levels(groupFactor)) < 2){
+      stop(paste0("Number of levels in groupFactor is less than 2 (levels(groupFactor): ", levels(groupFactor), "). 
+                  Must provide a factor with 2 or more levels to use qsmooth."))
+    }
+  
     if(any(is.na(object))){ stop("Object must not contains NAs.") }    
     
     # Scale normalization step

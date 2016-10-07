@@ -117,7 +117,7 @@ bodymapRat <- bodymapRat[keepRows,keepColumns]
 pd <- pData(bodymapRat)
 pd$group <- paste(pd$sex, pd$organ, sep="_")
 
-qsNorm <- qsmooth(object = exprs(bodymapRat), groupFactor = pd$group)
+qsNorm <- qsmooth(object = exprs(bodymapRat), groupFactor = pd$organ)
 
 }
 
