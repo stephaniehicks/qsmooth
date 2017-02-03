@@ -6,6 +6,10 @@ Author: Stephanie Hicks, Kwame Okrah, Hector Corrado Bravo and Rafael Irizarry
 Maintainer: Stephanie Hicks <stephaniechicks@gmail.com>
 Imports:
     Biobase,
+    minfi,
+    doParallel,
+    foreach,
+    iterators
 Depends:
     R (>= 3.1.2)
 Suggests:
