@@ -1,12 +1,13 @@
 Package: qsmooth
 Title: Smooth quantile normalization
 Version: 0.0.1
-Date: 2016-08-03
+Date: 2017-02-15
 Author: Stephanie Hicks, Kwame Okrah, Hector Corrada Bravo and Rafael Irizarry
 Maintainer: Stephanie Hicks <stephaniechicks@gmail.com>
 Imports:
     Biobase,
     minfi,
+    sva,
     doParallel,
     foreach,
     iterators

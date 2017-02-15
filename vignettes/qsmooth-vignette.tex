@@ -1,97 +1,57 @@
 %\VignetteIndexEntry{The qsmooth user's guide}
 %\VignettePackage{qsmooth}
 %\VignetteEngine{knitr::knitr}
-\documentclass{article}\usepackage[]{graphicx}\usepackage[usenames,dvipsnames]{color}
-%% maxwidth is the original width if it is less than linewidth
-%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
+\documentclass{article}
 
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-
-\usepackage{framed}
-\makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
-
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
-
-\usepackage{alltt}
-
-\RequirePackage{/Library/Frameworks/R.framework/Versions/3.3/Resources/library/BiocStyle/resources/tex/Bioconductor}
-
+\RequirePackage[]{/Library/Frameworks/R.framework/Versions/3.3/Resources/library/BiocStyle/resources/tex/Bioconductor2}
 \AtBeginDocument{\bibliographystyle{/Library/Frameworks/R.framework/Versions/3.3/Resources/library/BiocStyle/resources/tex/unsrturl}}
-
-
+\usepackage[noae, nogin]{Sweave}
 \setlength{\parskip}{1\baselineskip}
 \setlength{\parindent}{0pt}
 
 \title{The \texttt{qsmooth} user's guide}
-\author{Stephanie C. Hicks \texttt{stephaniechicks@gmail.com} \and
-Kwame Okrah \texttt{okrah.kwame@gene.com} \and
-Hector Corrado Bravo \texttt{hcorrada@gmail.com} \and
-Rafael A. Irizarry \texttt{rairizarry@gmail.com} }
+\author[1,2]{Stephanie C. Hicks}
+\author[3]{Kwame Okrah}
+\author[1,2]{Joseph Paulson}
+\author[1,2]{John Quackenbush}
+\author[1,2]{Rafael A. Irizarry}
+\author[4,5]{Hector Corrada Bravo}
+\affil[1]{Department of Biostatistics and Computational Biology, Dana-Farber Cancer Institute}
+\affil[2]{Department of Biostatistics, Harvard T.H. Chan School of Public Health}
+\affil[3]{Genentech}
+\affil[4]{Department of Computer Science, University of Maryland, College Park}
+\affil[5]{Center for Bioinformatics and Computational Biology, Institute of Advanced Computer Studies, University of Maryland, College Park}
 
-\date{Modified: August 4, 2015.  Compiled: \today}
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+
+\date{Modified: February 15, 2017.  Compiled: \today}
+
+\usepackage{Sweave}
 \begin{document}
+\input{qsmooth-vignette-concordance}
+
 
 \maketitle
- 
+
 \tableofcontents
 
 \section{Introduction}
 
-Global normalization methods such as quantile normalization 
+Global normalization methods such as quantile normalization
 \cite{Bolstad2003, Irizarry2003} have become a standard part of the
-analysis pipeline for high-throughput data to remove unwanted 
-technical variation. These methods and others that rely solely 
+analysis pipeline for high-throughput data to remove unwanted
+technical variation. These methods and others that rely solely
 on observed data without external information (e.g. spike-ins)
-are based on the assumption that only a minority of genes are 
-expected to be differentially expressed (or that an equivalent 
+are based on the assumption that only a minority of genes are
+expected to be differentially expressed (or that an equivalent
 number of genes increase and decrease across biological conditions
 \cite{aanes2014normalization}). This assumption can be interepreted
-in different ways leading to different global normalization 
+in different ways leading to different global normalization
 procedures. For example, in one normalization procedure, the method assumes
 the mean expression level across genes should be the same across samples
-\cite{Robinson2010}. In contrast, quantile normalization assumes the 
+\cite{Robinson2010}. In contrast, quantile normalization assumes the
 only difference between the statistical distribution of each sample
-is technical variation. Normalization is achieved by forcing the 
-observed distributions to be the same and the average distribution, 
+is technical variation. Normalization is achieved by forcing the
+observed distributions to be the same and the average distribution,
 obtained by taking the average of each quantile across samples,
 is used as the reference \cite{Bolstad2003}.
 
@@ -102,46 +62,46 @@ during zebrafish early developmental stages \cite{aanes2014normalization}.
 Similarily, cells expressing high levels of c-Myc undergo
 transcriptional amplification causing a 2 to 3 fold change in global
 gene expression compared to cells expressiong low c-Myc
-\cite{Loven2012}. 
+\cite{Loven2012}.
 
-Recently, an R/Biocoductor package (\texttt{quantro}) \cite{Hicks2015} 
-has been developed to test for global differences between groups of 
-distributions to asses whether global normalization methods such 
+Recently, an R/Biocoductor package (\texttt{quantro}) \cite{Hicks2015}
+has been developed to test for global differences between groups of
+distributions to evaluate whether global normalization methods such
 as quantile normalization should be applied. If global differences
-are found between groups of distributions, these changes may be of technical 
+are found between groups of distributions, these changes may be of technical
 or biological of interest. If these changes are of technical interest
-(e.g. batch effects), then global normalization methods should be applied. 
-If these changes are related to a biological factor (e.g. normal/tumor or 
-two tissues), then global normalization methods should not be applied 
-because the methods will remove the interesting biological variation 
-(i.e. differentially expressed genes) and artifically induce differences 
-between genes that were not differentially expressed. In the cases 
-with global differences between groups of distributions 
+(e.g. batch effects), then global normalization methods should be applied.
+If these changes are related to a biological covariate (e.g. normal/tumor or
+two tissues), then global normalization methods should not be applied
+because the methods will remove the interesting biological variation
+(i.e. differentially expressed genes) and artifically induce differences
+between genes that were not differentially expressed. In the cases
+with global differences between groups of distributions
 between biological conditions, quantile normalization is
 not an appropriate normalization method. In
-these cases, we can consider a more relaxed assumption about the data, 
-namely that the statistical distribution of each sample should be the 
-same within biological conditions or groups (compared to the more 
-stringent assumption of quantile normalization, which states the 
+these cases, we can consider a more relaxed assumption about the data,
+namely that the statistical distribution of each sample should be the
+same within biological conditions or groups (compared to the more
+stringent assumption of quantile normalization, which states the
 statistical distribution is the same across all samples).
 
-In this vignette we introduce a generalization of quantile 
-normalization, referred to as \textbf{smooth quantile normalization} 
-(\texttt{\bf{qsmooth}}), which is a weighted average of the two 
+In this vignette we introduce a generalization of quantile
+normalization, referred to as \textbf{smooth quantile normalization}
+(\textbf{qsmooth}), which is a weighted average of the two
 types of assumptions about the data. The \texttt{qsmooth} R-package
-contains the \texttt{qsmooth()} function, which computes a weight at 
-every quantile that compares the variability between groups relative 
+contains the \texttt{qsmooth()} function, which computes a weight at
+every quantile that compares the variability between groups relative
 to within groups. In one extreme, quantile normalization is applied
-and in the other extreme quantile normalization within each 
-biological condition is applied. The weight shrinks the group-level 
-quantile normalized data towards the overall reference quantiles 
-if variability between groups is sufficiently smaller than the 
-variability within groups. The algorithm is described in 
+and in the other extreme quantile normalization within each
+biological condition is applied. The weight shrinks the group-level
+quantile normalized data towards the overall reference quantiles
+if variability between groups is sufficiently smaller than the
+variability within groups. The algorithm is described in
 Figure \ref{algo} below.
 
-Let \texttt{gene(g)} denote the ${g}^{th}$ row after sorting 
-each column in the data. For each row, \texttt{gene(g)}, we 
-compute the weight $w_{(g)} \in [0, 1]$, where a weight of 0 implies 
+Let \texttt{gene(g)} denote the ${g}^{th}$ row after sorting
+each column in the data. For each row, \texttt{gene(g)}, we
+compute the weight $w_{(g)} \in [0, 1]$, where a weight of 0 implies
 quantile normalization within groups is applied and
 a weight of 1 indicates quantile normalization is applied.
 The weight at each row depends on the between group sum of squares
@@ -150,10 +110,10 @@ as follows:
 \begin{equation}
 w_{(g)} = \hbox{median} \{1 - \hbox{SSB}_{(i)} / \hbox{SST}_{(i)} | ~i = g-k, \dots, g, \dots, g+k \},
 \end{equation}
-where $k=$ floor(Total number of genes * 0.05). The number 
-0.05 is a flexible parameter that can be altered to change the 
-window of the number of genes considered. In this way, we 
-can use a rolling median to borrow information from 
+where $k=$ floor(Total number of genes * 0.05). The number
+0.05 is a flexible parameter that can be altered to change the
+window of the number of genes considered. In this way, we
+can use a rolling median to borrow information from
 neighboring genes in the weight.
 
 \begin{figure}[!h]
@@ -170,132 +130,125 @@ neighboring genes in the weight.
 \section{Getting Started}
 
 Load the package in R
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(qsmooth)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> library(qsmooth)
+\end{Sinput}
+\end{Schunk}
 
 
-\section{Data} 
+\section{Data}
 
-The \texttt{\bf{bodymapRat}} package contains an 
-\texttt{ExpressionSet} of 652 RNA-Seq samples from a comprehensive 
+The \textbf{bodymapRat} package contains an
+\texttt{ExpressionSet} of 652 RNA-Seq samples from a comprehensive
 rat transcriptomic BodyMap study. This data was derived from
-the raw FASTQ files obtained from Yu et al. (2014) \cite{Yu2014}. 
+the raw FASTQ files obtained from Yu et al. (2014) \cite{Yu2014}.
 It contains expression levels from 11 organs in male and female
-rats at 4 developmental stages. We will use a subset of this 
+rats at 4 developmental stages. We will use a subset of this
 data in this vignette.
 
-The R-package bodymapRat can be installed from GitHub using the R package 
-\texttt{\bf{devtools}}.
+The R-package bodymapRat can be installed from GitHub using the R package
+\textbf{devtools}.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(devtools)}
-\hlkwd{install_github}\hlstd{(}\hlstr{"stephaniehicks/bodymapRat"}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> library(devtools)
+> install_github("stephaniehicks/bodymapRat")
+\end{Sinput}
+\end{Schunk}
 
 
 \subsection{bodymapRat Example 1 - Comparing male and female rats in one tissue}
 
 The first example is based a dataset
-which contains lung samples from 21 week old male and female rats. 
+which contains lung samples from 21 week old male and female rats.
 Four samples are from males and four samples are from females.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(Biobase)}
-\hlkwd{library}\hlstd{(bodymapRat)}
-\hlkwd{data}\hlstd{(bodymapRat)}
-
-\hlcom{# select lung samples, stage 21 weeks, and only bio reps}
-\hlstd{keepColumns} \hlkwb{=} \hlstd{(}\hlkwd{pData}\hlstd{(bodymapRat)}\hlopt{$}\hlstd{organ} \hlopt{==} \hlstr{"Lung"}\hlstd{)} \hlopt{&}
-    \hlstd{(}\hlkwd{pData}\hlstd{(bodymapRat)}\hlopt{$}\hlstd{stage} \hlopt{==} \hlnum{21}\hlstd{)} \hlopt{&} \hlstd{(}\hlkwd{pData}\hlstd{(bodymapRat)}\hlopt{$}\hlstd{techRep} \hlopt{==} \hlnum{1}\hlstd{)}
-\hlstd{keepRows} \hlkwb{=} \hlkwd{rowMeans}\hlstd{(}\hlkwd{exprs}\hlstd{(bodymapRat))} \hlopt{>} \hlnum{10} \hlcom{# Filter out low counts}
-\hlstd{bodymapRatE1} \hlkwb{<-} \hlstd{bodymapRat[keepRows,keepColumns]}
-\hlstd{bodymapRatE1}
-\end{alltt}
-\begin{verbatim}
-## ExpressionSet (storageMode: lockedEnvironment)
-## assayData: 18629 features, 8 samples 
-##   element names: exprs 
-## protocolData: none
-## phenoData
-##   sampleNames: SRR1170173 SRR1170175 ... SRR1170213 (8 total)
-##   varLabels: sraExperiment sraRun ... ytile (22 total)
-##   varMetadata: labelDescription
-## featureData: none
-## experimentData: use 'experimentData(object)'
-## Annotation:
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> library(Biobase)
+> library(bodymapRat)
+> data(bodymapRat)
+> # select lung samples, stage 21 weeks, and only bio reps
+> keepColumns = (pData(bodymapRat)$organ == "Lung") &
++     (pData(bodymapRat)$stage == 21) & (pData(bodymapRat)$techRep == 1)
+> keepRows = rowMeans(exprs(bodymapRat)) > 10 # Filter out low counts
+> bodymapRatE1 <- bodymapRat[keepRows,keepColumns]
+> bodymapRatE1
+\end{Sinput}
+\begin{Soutput}
+ExpressionSet (storageMode: lockedEnvironment)
+assayData: 18629 features, 8 samples 
+  element names: exprs 
+protocolData: none
+phenoData
+  sampleNames: SRR1170173 SRR1170175 ... SRR1170213 (8 total)
+  varLabels: sraExperiment sraRun ... ytile (22 total)
+  varMetadata: labelDescription
+featureData: none
+experimentData: use 'experimentData(object)'
+Annotation:  
+\end{Soutput}
+\end{Schunk}
 
 \subsection{bodymapRat Example 2 - Comparing two tissues}
 
-The second example is based a dataset which contains brain and liver 
-tissue samples from 21 week old male and female rats. 
+The second example is based a dataset which contains brain and liver
+tissue samples from 21 week old male and female rats.
 eight samples are from males and eight samples are from females.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlcom{# select brain and liver samples, stage 21 weeks, and only bio reps}
-\hlstd{keepColumns} \hlkwb{=} \hlstd{(}\hlkwd{pData}\hlstd{(bodymapRat)}\hlopt{$}\hlstd{organ} \hlopt{%in%} \hlkwd{c}\hlstd{(}\hlstr{"Brain"}\hlstd{,} \hlstr{"Liver"}\hlstd{))} \hlopt{&}
-         \hlstd{(}\hlkwd{pData}\hlstd{(bodymapRat)}\hlopt{$}\hlstd{stage} \hlopt{==} \hlnum{21}\hlstd{)} \hlopt{&} \hlstd{(}\hlkwd{pData}\hlstd{(bodymapRat)}\hlopt{$}\hlstd{techRep} \hlopt{==} \hlnum{1}\hlstd{)}
-\hlstd{keepRows} \hlkwb{=} \hlkwd{rowMeans}\hlstd{(}\hlkwd{exprs}\hlstd{(bodymapRat))} \hlopt{>} \hlnum{10} \hlcom{# Filter out low counts}
-\hlstd{bodymapRatE2} \hlkwb{<-} \hlstd{bodymapRat[keepRows,keepColumns]}
-\hlstd{bodymapRatE2}
-\end{alltt}
-\begin{verbatim}
-## ExpressionSet (storageMode: lockedEnvironment)
-## assayData: 18629 features, 16 samples 
-##   element names: exprs 
-## protocolData: none
-## phenoData
-##   sampleNames: SRR1169975 SRR1169977 ... SRR1170277 (16 total)
-##   varLabels: sraExperiment sraRun ... ytile (22 total)
-##   varMetadata: labelDescription
-## featureData: none
-## experimentData: use 'experimentData(object)'
-## Annotation:
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> # select brain and liver samples, stage 21 weeks, and only bio reps
+> keepColumns = (pData(bodymapRat)$organ %in% c("Brain", "Liver")) &
++          (pData(bodymapRat)$stage == 21) & (pData(bodymapRat)$techRep == 1)
+> keepRows = rowMeans(exprs(bodymapRat)) > 10 # Filter out low counts
+> bodymapRatE2 <- bodymapRat[keepRows,keepColumns]
+> bodymapRatE2
+\end{Sinput}
+\begin{Soutput}
+ExpressionSet (storageMode: lockedEnvironment)
+assayData: 18629 features, 16 samples 
+  element names: exprs 
+protocolData: none
+phenoData
+  sampleNames: SRR1169975 SRR1169977 ... SRR1170277 (16 total)
+  varLabels: sraExperiment sraRun ... ytile (22 total)
+  varMetadata: labelDescription
+featureData: none
+experimentData: use 'experimentData(object)'
+Annotation:  
+\end{Soutput}
+\end{Schunk}
 
 \section{Using the \texttt{qsmooth() function}}
 
 
 \subsection{Input for \texttt{qsmooth()}}
-The \texttt{qsmooth()} function must have two objects as input: 
+The \texttt{qsmooth()} function must have two objects as input:
 
 \begin{itemize}
-\item \texttt{object}: a data frame or matrix with observations 
-(e.g. probes or genes) on the rows and samples as the columns. 
-\texttt{qsmooth()} can accept objects that inherit \texttt{eSets} 
-such as an \texttt{ExpressionSet} or \texttt{MethylSet}. In this case, 
-the \texttt{groupFactor} must still be provided. 
-
-\item \texttt{groupFactor}: a factor variable that represents 
-the group level information about each sample. For example if the 
-samples represent two different tissues, provide \texttt{qsmooth()} 
-with a factor representing which columns in the \texttt{object} 
-are different tissue samples.
-
-\item \texttt{normFactors}: {\bf optional} scaling normalization factors. 
-Default is \texttt{NULL}. If \texttt{normFactors} is not equal to 
-\texttt{NULL}, the user can provide a vector of scaling factors 
-that will be used to modify the expression data set prior to 
+\item \texttt{object}: a data frame or matrix with observations
+(e.g. probes or genes) on the rows and samples as the columns.
+\texttt{qsmooth()} can accept objects that inherit \texttt{eSets}
+such as an \texttt{ExpressionSet} or \texttt{MethylSet}. In this case,
+the \texttt{groupFactor} must still be provided.
+\item \texttt{groupFactor}: a continuous or categorial covariate
+that represents the group level biological variation about each sample.
+For example if the samples represent two different tissues,
+provide \texttt{qsmooth()} with a covariate representing
+which columns in the \texttt{object} are different tissue samples.
+\item \texttt{batch}: {\bf optional} batch covariate (multiple
+batches are not allowed). If batch covariate is provided,
+\texttt{ComBat()} from \texttt{sva} is used prior to
+qsmooth normalization to remove batch effects.
+See \texttt{ComBat()} for more details.
+\item \texttt{normFactors}: {\bf optional} scaling normalization factors.
+Default is \texttt{NULL}. If \texttt{normFactors} is not equal to
+\texttt{NULL}, the user can provide a vector of scaling factors
+that will be used to modify the expression data set prior to
 applying the \texttt{qsmooth} algorithm.
-
-\item \texttt{window}: window size for running median (defined as a 
+\item \texttt{window}: window size for running median (defined as a
 fraction of the number of rows of exprs. Default is 0.05
 \end{itemize}
 
@@ -304,210 +257,205 @@ fraction of the number of rows of exprs. Default is 0.05
 \subsection{Running \texttt{qsmooth()}}
 
 \subsubsection{Using Example 1 data}
-In the first example, the groups we are interested in comparing are 
-contained in the \texttt{sex} column in the \texttt{pData(bodymapRatE1)} 
-dataset. To run the \texttt{qsmooth()} function, input the data object 
-and the object containing the phenotypic data. Here we use the 
-\texttt{bodymapRatE1} data set as an example. 
+In the first example, the groups we are interested in comparing are
+contained in the \texttt{sex} column in the \texttt{pData(bodymapRatE1)}
+dataset. To run the \texttt{qsmooth()} function, input the data object
+and the object containing the phenotypic data. Here we use the
+\texttt{bodymapRatE1} data set as an example.
 
 The first row shows the boxplots and density plot of the raw data that
-has been transformed on the \texttt{log2()} scale and added a 
+has been transformed on the \texttt{log2()} scale and added a
 pseudo-count of 1 (i.e. \texttt{log2(counts+1)}).
 
-The second row shows the boxplots and density plot of the qsmooth 
-normalized data. 
+The second row shows the boxplots and density plot of the qsmooth
+normalized data.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{library}\hlstd{(quantro)}
 
-\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
-\hlstd{pd1} \hlkwb{<-} \hlkwd{pData}\hlstd{(bodymapRatE1)}
-\hlstd{eset1_ercc} \hlkwb{<-} \hlkwd{exprs}\hlstd{(bodymapRatE1)[}\hlkwd{grepl}\hlstd{(}\hlstr{"^ERCC"}\hlstd{,} \hlkwd{rownames}\hlstd{(} \hlkwd{exprs}\hlstd{(bodymapRatE1))), ]}
-\hlstd{eset1} \hlkwb{<-} \hlkwd{exprs}\hlstd{(bodymapRatE1)[}\hlopt{!}\hlkwd{grepl}\hlstd{(}\hlstr{"^ERCC"}\hlstd{,} \hlkwd{rownames}\hlstd{(} \hlkwd{exprs}\hlstd{(bodymapRatE1))), ]}
+\begin{Schunk}
+\begin{Sinput}
+> library(quantro)
+> par(mfrow=c(2,2))
+> pd1 <- pData(bodymapRatE1)
+> eset1_ercc <- exprs(bodymapRatE1)[grepl("^ERCC", rownames( exprs(bodymapRatE1))), ]
+> eset1 <- exprs(bodymapRatE1)[!grepl("^ERCC", rownames( exprs(bodymapRatE1))), ]
+> matboxplot(log2(eset1+1), groupFactor = pd1$sex, main = "Raw data",
++            ylab = "Expression (log2 scale)", xaxt="n")
+> axis(1, at=seq_len(length(pd1$sex)), labels=FALSE)
+> text(seq_len(length(pd1$sex)), par("usr")[3] -1, labels = pd1$sex, srt = 90, pos = 1, xpd = TRUE)
+> matdensity(log2(eset1+1), groupFactor = pd1$sex, main = "Raw data",
++            xlab = "Expression (log2 scale)", ylab = "density")
+> legend('topright', levels(factor(pd1$sex)), col = 1:2, lty = 1)
+> qsNormE1 <- qsmooth(object = eset1, groupFactor = pd1$sex)
+> matboxplot(log2(qsmoothData(qsNormE1)+1), groupFactor = pd1$sex,
++            main = "qsmooth normalized data", ylab = "Expression (log2 scale)",
++            xaxt="n")
+> axis(1, at=seq_len(length(pd1$sex)), labels=FALSE)
+> text(seq_len(length(pd1$sex)), par("usr")[3] -1, labels = pd1$sex, srt = 90, pos = 1, xpd = TRUE)
+> matdensity(log2(qsmoothData(qsNormE1)+1), groupFactor = pd1$sex,
++            main = "qsmooth normalized data",
++            xlab = "Expression (log2 scale)", ylab = "density")
+> legend('topright', levels(factor(pd1$sex)), col = 1:2, lty = 1)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{qsmooth-vignette-calculate-qsmooth1}
 
-\hlkwd{matboxplot}\hlstd{(}\hlkwd{log2}\hlstd{(eset1}\hlopt{+}\hlnum{1}\hlstd{),} \hlkwc{groupFactor} \hlstd{= pd1}\hlopt{$}\hlstd{sex,} \hlkwc{main} \hlstd{=} \hlstr{"Raw data"}\hlstd{,}
-           \hlkwc{ylab} \hlstd{=} \hlstr{"Expression (log2 scale)"}\hlstd{,} \hlkwc{xaxt}\hlstd{=}\hlstr{"n"}\hlstd{)}
-\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{at}\hlstd{=}\hlkwd{seq_len}\hlstd{(}\hlkwd{length}\hlstd{(pd1}\hlopt{$}\hlstd{sex)),} \hlkwc{labels}\hlstd{=}\hlnum{FALSE}\hlstd{)}
-\hlkwd{text}\hlstd{(}\hlkwd{seq_len}\hlstd{(}\hlkwd{length}\hlstd{(pd1}\hlopt{$}\hlstd{sex)),} \hlkwd{par}\hlstd{(}\hlstr{"usr"}\hlstd{)[}\hlnum{3}\hlstd{]} \hlopt{-}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= pd1}\hlopt{$}\hlstd{sex,} \hlkwc{srt} \hlstd{=} \hlnum{90}\hlstd{,} \hlkwc{pos} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{xpd} \hlstd{=} \hlnum{TRUE}\hlstd{)}
 
-\hlkwd{matdensity}\hlstd{(}\hlkwd{log2}\hlstd{(eset1}\hlopt{+}\hlnum{1}\hlstd{),} \hlkwc{groupFactor} \hlstd{= pd1}\hlopt{$}\hlstd{sex,} \hlkwc{main} \hlstd{=} \hlstr{"Raw data"}\hlstd{,}
-           \hlkwc{xlab} \hlstd{=} \hlstr{"Expression (log2 scale)"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"density"}\hlstd{)}
-\hlkwd{legend}\hlstd{(}\hlstr{'topright'}\hlstd{,} \hlkwd{levels}\hlstd{(}\hlkwd{factor}\hlstd{(pd1}\hlopt{$}\hlstd{sex)),} \hlkwc{col} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlstd{)}
+The smoothed quantile normalized data can be extracted using the
+\texttt{qsmoothData()} function (see above) and the smoothed quantile weights
+can plotted using the \texttt{qsmoothPlotWeights()} function (see below).
 
-\hlstd{qsNormE1} \hlkwb{<-} \hlkwd{qsmooth}\hlstd{(}\hlkwc{object} \hlstd{= eset1,} \hlkwc{groupFactor} \hlstd{= pd1}\hlopt{$}\hlstd{sex)}
-\hlkwd{matboxplot}\hlstd{(}\hlkwd{log2}\hlstd{(}\hlkwd{qsmoothData}\hlstd{(qsNormE1)}\hlopt{+}\hlnum{1}\hlstd{),} \hlkwc{groupFactor} \hlstd{= pd1}\hlopt{$}\hlstd{sex,}
-           \hlkwc{main} \hlstd{=} \hlstr{"qsmooth normalized data"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Expression (log2 scale)"}\hlstd{,}
-           \hlkwc{xaxt}\hlstd{=}\hlstr{"n"}\hlstd{)}
-\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{at}\hlstd{=}\hlkwd{seq_len}\hlstd{(}\hlkwd{length}\hlstd{(pd1}\hlopt{$}\hlstd{sex)),} \hlkwc{labels}\hlstd{=}\hlnum{FALSE}\hlstd{)}
-\hlkwd{text}\hlstd{(}\hlkwd{seq_len}\hlstd{(}\hlkwd{length}\hlstd{(pd1}\hlopt{$}\hlstd{sex)),} \hlkwd{par}\hlstd{(}\hlstr{"usr"}\hlstd{)[}\hlnum{3}\hlstd{]} \hlopt{-}\hlnum{1}\hlstd{,} \hlkwc{labels} \hlstd{= pd1}\hlopt{$}\hlstd{sex,} \hlkwc{srt} \hlstd{=} \hlnum{90}\hlstd{,} \hlkwc{pos} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{xpd} \hlstd{=} \hlnum{TRUE}\hlstd{)}
-\hlkwd{matdensity}\hlstd{(}\hlkwd{log2}\hlstd{(}\hlkwd{qsmoothData}\hlstd{(qsNormE1)}\hlopt{+}\hlnum{1}\hlstd{),} \hlkwc{groupFactor} \hlstd{= pd1}\hlopt{$}\hlstd{sex,}
-           \hlkwc{main} \hlstd{=} \hlstr{"qsmooth normalized data"}\hlstd{,}
-           \hlkwc{xlab} \hlstd{=} \hlstr{"Expression (log2 scale)"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"density"}\hlstd{)}
-\hlkwd{legend}\hlstd{(}\hlstr{'topright'}\hlstd{,} \hlkwd{levels}\hlstd{(}\hlkwd{factor}\hlstd{(pd1}\hlopt{$}\hlstd{sex)),} \hlkwc{col} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/calculate-qsmooth1-1} 
+\begin{Schunk}
+\begin{Sinput}
+> qsmoothPlotWeights(qsNormE1)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{qsmooth-vignette-plot-qsmooth1-weights}
 
-\end{knitrout}
-
-The smoothed quantile normalized data can be extracted using the 
-\texttt{qsmoothData()} function (see above) and the smoothed quantile weights 
-can plotted using the \texttt{qsmoothPlotWeights()} function (see below). 
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{qsmoothPlotWeights}\hlstd{(qsNormE1)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/plot-qsmooth1-weights-1} 
-
-\end{knitrout}
 
 The weights are calculated for each quantile in the data set.
 A weight of 1 indicates quantile normalization is applied,
 where as a weight of 0 indicates quantile normalization
-within the groups is applied. See Figure \ref{algo} for 
+within the groups is applied. See Figure \ref{algo} for
 more details on the weights.
 
-In this example, the weights are close to 1 across all the 
-quantiles indicating that there is no major difference 
-between the group-level quantiles in the female and male rats. 
-Here, the \texttt{qsmooth()} normalization method returns a 
+In this example, the weights are close to 1 across all the
+quantiles indicating that there is no major difference
+between the group-level quantiles in the female and male rats.
+Here, the \texttt{qsmooth()} normalization method returns a
 normalized data set that is nearly identical
-to the conventional quantile normalization. 
+to the conventional quantile normalization.
 
 
 \subsubsection{Using Example 2 data}
 
-In the second example (\texttt{bodymapRatE2}), the groups we 
-are interested in comparing are the two types of tissues in 
-the 21 week old male and female rats. 
+In the second example (\texttt{bodymapRatE2}), the groups we
+are interested in comparing are the two types of tissues in
+the 21 week old male and female rats.
 
-Similar to the first example, the first row shows the boxplots 
-and density plot of the raw data that has been transformed on 
-the \texttt{log2()} scale and added a pseudo-count of 1 
-(i.e. \texttt{log2(counts+1)}). The second row shows the boxplots 
-and density plot of the qsmooth normalized data. 
+Similar to the first example, the first row shows the boxplots
+and density plot of the raw data that has been transformed on
+the \texttt{log2()} scale and added a pseudo-count of 1
+(i.e. \texttt{log2(counts+1)}). The second row shows the boxplots
+and density plot of the qsmooth normalized data.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
-\hlstd{pd2} \hlkwb{<-} \hlkwd{pData}\hlstd{(bodymapRatE2)}
-\hlstd{eset2_ercc} \hlkwb{<-} \hlkwd{exprs}\hlstd{(bodymapRatE2)[}\hlkwd{grepl}\hlstd{(}\hlstr{"^ERCC"}\hlstd{,} \hlkwd{rownames}\hlstd{(} \hlkwd{exprs}\hlstd{(bodymapRatE2))), ]}
-\hlstd{eset2} \hlkwb{<-} \hlkwd{exprs}\hlstd{(bodymapRatE2)[}\hlopt{!}\hlkwd{grepl}\hlstd{(}\hlstr{"^ERCC"}\hlstd{,} \hlkwd{rownames}\hlstd{(} \hlkwd{exprs}\hlstd{(bodymapRatE2))), ]}
-\hlstd{pd2}\hlopt{$}\hlstd{group} \hlkwb{<-} \hlkwd{paste}\hlstd{(pd2}\hlopt{$}\hlstd{organ, pd2}\hlopt{$}\hlstd{sex,} \hlkwc{sep}\hlstd{=}\hlstr{"_"}\hlstd{)}
+\begin{Schunk}
+\begin{Sinput}
+> par(mfrow=c(2,2))
+> pd2 <- pData(bodymapRatE2)
+> eset2_ercc <- exprs(bodymapRatE2)[grepl("^ERCC", rownames( exprs(bodymapRatE2))), ]
+> eset2 <- exprs(bodymapRatE2)[!grepl("^ERCC", rownames( exprs(bodymapRatE2))), ]
+> pd2$group <- paste(pd2$organ, pd2$sex, sep="_")
+> matboxplot(log2(eset2+1), groupFactor = factor(pd2$organ), main = "Raw data",
++            ylab = "Expression (log2 scale)", xaxt="n")
+> axis(1, at=seq_len(length(as.character(pd2$organ))), labels=FALSE)
+> text(seq_len(length(pd2$organ)), par("usr")[3] -2, labels = pd2$organ, srt = 90, pos = 1, xpd = TRUE)
+> matdensity(log2(eset2+1), groupFactor = pd2$organ, main = "Raw data",
++            xlab = "Expression (log2 scale)", ylab= "density")
+> legend('topright', levels(factor(pd2$organ)), col = 1:2, lty = 1)
+> qsNormE2 <- qsmooth(object = eset2, groupFactor = pd2$organ)
+> matboxplot(log2(qsmoothData(qsNormE2)+1), groupFactor = pd2$organ,
++            main = "qsmooth normalized data", ylab = "Expression (log2 scale)",
++            xaxt="n")
+> axis(1, at=seq_len(length(pd2$organ)), labels=FALSE)
+> text(seq_len(length(pd2$organ)), par("usr")[3] -2, labels = pd2$organ, srt = 90, pos = 1, xpd = TRUE)
+> matdensity(log2(qsmoothData(qsNormE2)+1), groupFactor = pd2$organ,
++            main = "qsmooth normalized data",
++            xlab = "Expression (log2 scale)", ylab = "density")
+> legend('topright', levels(factor(pd2$organ)), col = 1:2, lty = 1)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{qsmooth-vignette-calculate-qsmooth2}
 
-\hlkwd{matboxplot}\hlstd{(}\hlkwd{log2}\hlstd{(eset2}\hlopt{+}\hlnum{1}\hlstd{),} \hlkwc{groupFactor} \hlstd{=} \hlkwd{factor}\hlstd{(pd2}\hlopt{$}\hlstd{organ),} \hlkwc{main} \hlstd{=} \hlstr{"Raw data"}\hlstd{,}
-           \hlkwc{ylab} \hlstd{=} \hlstr{"Expression (log2 scale)"}\hlstd{,} \hlkwc{xaxt}\hlstd{=}\hlstr{"n"}\hlstd{)}
-\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{at}\hlstd{=}\hlkwd{seq_len}\hlstd{(}\hlkwd{length}\hlstd{(}\hlkwd{as.character}\hlstd{(pd2}\hlopt{$}\hlstd{organ))),} \hlkwc{labels}\hlstd{=}\hlnum{FALSE}\hlstd{)}
-\hlkwd{text}\hlstd{(}\hlkwd{seq_len}\hlstd{(}\hlkwd{length}\hlstd{(pd2}\hlopt{$}\hlstd{organ)),} \hlkwd{par}\hlstd{(}\hlstr{"usr"}\hlstd{)[}\hlnum{3}\hlstd{]} \hlopt{-}\hlnum{2}\hlstd{,} \hlkwc{labels} \hlstd{= pd2}\hlopt{$}\hlstd{organ,} \hlkwc{srt} \hlstd{=} \hlnum{90}\hlstd{,} \hlkwc{pos} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{xpd} \hlstd{=} \hlnum{TRUE}\hlstd{)}
-\hlkwd{matdensity}\hlstd{(}\hlkwd{log2}\hlstd{(eset2}\hlopt{+}\hlnum{1}\hlstd{),} \hlkwc{groupFactor} \hlstd{= pd2}\hlopt{$}\hlstd{organ,} \hlkwc{main} \hlstd{=} \hlstr{"Raw data"}\hlstd{,}
-           \hlkwc{xlab} \hlstd{=} \hlstr{"Expression (log2 scale)"}\hlstd{,} \hlkwc{ylab}\hlstd{=} \hlstr{"density"}\hlstd{)}
-\hlkwd{legend}\hlstd{(}\hlstr{'topright'}\hlstd{,} \hlkwd{levels}\hlstd{(}\hlkwd{factor}\hlstd{(pd2}\hlopt{$}\hlstd{organ)),} \hlkwc{col} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlstd{)}
+We see there are global differences in the distributions between the
+two tissues (liver and brain) in the rats.
 
-\hlstd{qsNormE2} \hlkwb{<-} \hlkwd{qsmooth}\hlstd{(}\hlkwc{object} \hlstd{= eset2,} \hlkwc{groupFactor} \hlstd{= pd2}\hlopt{$}\hlstd{organ)}
-\hlkwd{matboxplot}\hlstd{(}\hlkwd{log2}\hlstd{(}\hlkwd{qsmoothData}\hlstd{(qsNormE2)}\hlopt{+}\hlnum{1}\hlstd{),} \hlkwc{groupFactor} \hlstd{= pd2}\hlopt{$}\hlstd{organ,}
-           \hlkwc{main} \hlstd{=} \hlstr{"qsmooth normalized data"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"Expression (log2 scale)"}\hlstd{,}
-           \hlkwc{xaxt}\hlstd{=}\hlstr{"n"}\hlstd{)}
-\hlkwd{axis}\hlstd{(}\hlnum{1}\hlstd{,} \hlkwc{at}\hlstd{=}\hlkwd{seq_len}\hlstd{(}\hlkwd{length}\hlstd{(pd2}\hlopt{$}\hlstd{organ)),} \hlkwc{labels}\hlstd{=}\hlnum{FALSE}\hlstd{)}
-\hlkwd{text}\hlstd{(}\hlkwd{seq_len}\hlstd{(}\hlkwd{length}\hlstd{(pd2}\hlopt{$}\hlstd{organ)),} \hlkwd{par}\hlstd{(}\hlstr{"usr"}\hlstd{)[}\hlnum{3}\hlstd{]} \hlopt{-}\hlnum{2}\hlstd{,} \hlkwc{labels} \hlstd{= pd2}\hlopt{$}\hlstd{organ,} \hlkwc{srt} \hlstd{=} \hlnum{90}\hlstd{,} \hlkwc{pos} \hlstd{=} \hlnum{1}\hlstd{,} \hlkwc{xpd} \hlstd{=} \hlnum{TRUE}\hlstd{)}
-\hlkwd{matdensity}\hlstd{(}\hlkwd{log2}\hlstd{(}\hlkwd{qsmoothData}\hlstd{(qsNormE2)}\hlopt{+}\hlnum{1}\hlstd{),} \hlkwc{groupFactor} \hlstd{= pd2}\hlopt{$}\hlstd{organ,}
-           \hlkwc{main} \hlstd{=} \hlstr{"qsmooth normalized data"}\hlstd{,}
-           \hlkwc{xlab} \hlstd{=} \hlstr{"Expression (log2 scale)"}\hlstd{,} \hlkwc{ylab} \hlstd{=} \hlstr{"density"}\hlstd{)}
-\hlkwd{legend}\hlstd{(}\hlstr{'topright'}\hlstd{,} \hlkwd{levels}\hlstd{(}\hlkwd{factor}\hlstd{(pd2}\hlopt{$}\hlstd{organ)),} \hlkwc{col} \hlstd{=} \hlnum{1}\hlopt{:}\hlnum{2}\hlstd{,} \hlkwc{lty} \hlstd{=} \hlnum{1}\hlstd{)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/calculate-qsmooth2-1} 
+The smoothed quantile normalized data can be extracted using the
+\texttt{qsmoothData()} function (see above) and the smoothed quantile weights
+can plotted using the \texttt{qsmoothPlotWeights()} function (see below).
 
-\end{knitrout}
-
-We see there are global differences in the distributions between the 
-two tissues (liver and brain) in the rats. 
-
-The smoothed quantile normalized data can be extracted using the 
-\texttt{qsmoothData()} function (see above) and the smoothed quantile weights 
-can plotted using the \texttt{qsmoothPlotWeights()} function (see below). 
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{qsmoothPlotWeights}\hlstd{(qsNormE2)}
-\end{alltt}
-\end{kframe}
-\includegraphics[width=\maxwidth]{figure/plot-qsmooth2-weights-1} 
-
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> qsmoothPlotWeights(qsNormE2)
+\end{Sinput}
+\end{Schunk}
+\includegraphics{qsmooth-vignette-plot-qsmooth2-weights}
 
 Recall, a weight of 1 indicates quantile normalization is applied,
 where as a weight of 0 indicates quantile normalization
-within the groups is applied. 
+within the groups is applied.
 
-In this example, the weights range from 0.2 to 0.8 across the quantiles, 
-where the weights are close to 0.2 for the quantiles close to 0 and the 
-weights are close to 0.8 for the quantiles close to 1. 
+In this example, the weights range from 0.2 to 0.8 across the quantiles,
+where the weights are close to 0.2 for the quantiles close to 0 and the
+weights are close to 0.8 for the quantiles close to 1.
 This plot suggests the distributions contain more variablity between
-the groups compared to within groups for the small quantiles (and 
-the conventional quantile normalization is not necessarily appropriate). 
-As the quantiles get bigger, there is less variability between groups which 
-increases the weight closer to 0.8 as the quantiles get bigger. 
+the groups compared to within groups for the small quantiles (and
+the conventional quantile normalization is not necessarily appropriate).
+As the quantiles get bigger, there is less variability between groups which
+increases the weight closer to 0.8 as the quantiles get bigger.
 
 
 \section{SessionInfo}
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{sessionInfo}\hlstd{()}
-\end{alltt}
-\begin{verbatim}
-## R version 3.3.1 (2016-06-21)
-## Platform: x86_64-apple-darwin13.4.0 (64-bit)
-## Running under: OS X 10.11.6 (El Capitan)
-## 
-## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## attached base packages:
-## [1] parallel  stats     graphics  grDevices datasets  utils     methods   base     
-## 
-## other attached packages:
-## [1] quantro_1.6.2       bodymapRat_0.0.1    Biobase_2.32.0      BiocGenerics_0.18.0
-## [5] qsmooth_0.0.1       knitr_1.13         
-## 
-## loaded via a namespace (and not attached):
-##  [1] mclust_5.2                 base64_2.0                 Rcpp_0.12.6               
-##  [4] locfit_1.5-9.1             lattice_0.20-33            Rsamtools_1.24.0          
-##  [7] Biostrings_2.40.2          digest_0.6.10              foreach_1.4.3             
-## [10] R6_2.1.2                   GenomeInfoDb_1.8.3         plyr_1.8.4                
-## [13] chron_2.3-47               stats4_3.3.1               RSQLite_1.0.0             
-## [16] evaluate_0.9               ggplot2_2.1.0              httr_1.2.1                
-## [19] bumphunter_1.12.0          highr_0.6                  zlibbioc_1.18.0           
-## [22] GenomicFeatures_1.24.5     data.table_1.9.6           annotate_1.50.0           
-## [25] S4Vectors_0.10.2           Matrix_1.2-6               preprocessCore_1.34.0     
-## [28] splines_3.3.1              BiocParallel_1.6.3         stringr_1.0.0             
-## [31] munsell_0.4.3              RCurl_1.95-4.8             biomaRt_2.28.0            
-## [34] rtracklayer_1.32.2         multtest_2.28.0            pkgmaker_0.22             
-## [37] openssl_0.9.4              SummarizedExperiment_1.2.3 GEOquery_2.38.4           
-## [40] quadprog_1.5-5             IRanges_2.6.1              codetools_0.2-14          
-## [43] matrixStats_0.50.2         XML_3.98-1.4               reshape_0.8.5             
-## [46] GenomicAlignments_1.8.4    MASS_7.3-45                bitops_1.0-6              
-## [49] grid_3.3.1                 gtable_0.2.0               nlme_3.1-128              
-## [52] xtable_1.8-2               registry_0.3               DBI_0.4-1                 
-## [55] magrittr_1.5               formatR_1.4                scales_0.4.0              
-## [58] stringi_1.1.1              XVector_0.12.1             genefilter_1.54.2         
-## [61] doRNG_1.6                  doParallel_1.0.10          limma_3.28.17             
-## [64] minfi_1.18.6               nor1mix_1.2-1              BiocStyle_2.0.3           
-## [67] RColorBrewer_1.1-2         iterators_1.0.8            siggenes_1.46.0           
-## [70] tools_3.3.1                illuminaio_0.14.0          rngtools_1.2.4            
-## [73] survival_2.39-5            colorspace_1.2-6           AnnotationDbi_1.34.4      
-## [76] GenomicRanges_1.24.2       beanplot_1.2
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+\begin{Schunk}
+\begin{Sinput}
+> sessionInfo()
+\end{Sinput}
+\begin{Soutput}
+R version 3.3.2 (2016-10-31)
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+Running under: OS X El Capitan 10.11.6
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] parallel  stats     graphics  grDevices datasets  utils    
+[7] methods   base     
+
+other attached packages:
+[1] quantro_1.6.2       bodymapRat_0.0.1    Biobase_2.32.0     
+[4] BiocGenerics_0.18.0 qsmooth_0.0.1      
+
+loaded via a namespace (and not attached):
+ [1] mclust_5.2                 base64_2.0                
+ [3] Rcpp_0.12.7                locfit_1.5-9.1            
+ [5] lattice_0.20-34            Rsamtools_1.24.0          
+ [7] Biostrings_2.40.2          digest_0.6.10             
+ [9] foreach_1.4.3              R6_2.1.3                  
+[11] GenomeInfoDb_1.8.7         plyr_1.8.4                
+[13] chron_2.3-47               stats4_3.3.2              
+[15] RSQLite_1.0.0              httr_1.2.1                
+[17] bumphunter_1.12.0          ggplot2_2.1.0             
+[19] zlibbioc_1.18.0            GenomicFeatures_1.24.5    
+[21] data.table_1.9.6           annotate_1.50.0           
+[23] S4Vectors_0.10.3           Matrix_1.2-7.1            
+[25] preprocessCore_1.34.0      splines_3.3.2             
+[27] BiocParallel_1.6.6         stringr_1.1.0             
+[29] munsell_0.4.3              RCurl_1.95-4.8            
+[31] biomaRt_2.28.0             rtracklayer_1.32.2        
+[33] multtest_2.28.0            pkgmaker_0.22             
+[35] openssl_0.9.4              SummarizedExperiment_1.2.3
+[37] GEOquery_2.38.4            quadprog_1.5-5            
+[39] IRanges_2.6.1              codetools_0.2-15          
+[41] matrixStats_0.50.2         XML_3.98-1.4              
+[43] reshape_0.8.5              GenomicAlignments_1.8.4   
+[45] MASS_7.3-45                bitops_1.0-6              
+[47] grid_3.3.2                 nlme_3.1-128              
+[49] xtable_1.8-2               gtable_0.2.0              
+[51] registry_0.3               DBI_0.5-1                 
+[53] magrittr_1.5               scales_0.4.0              
+[55] stringi_1.1.1              XVector_0.12.1            
+[57] genefilter_1.54.2          doRNG_1.6                 
+[59] doParallel_1.0.10          limma_3.28.21             
+[61] minfi_1.18.6               nor1mix_1.2-2             
+[63] BiocStyle_2.0.3            RColorBrewer_1.1-2        
+[65] iterators_1.0.8            siggenes_1.46.0           
+[67] tools_3.3.2                illuminaio_0.14.0         
+[69] rngtools_1.2.4             survival_2.39-5           
+[71] colorspace_1.2-6           AnnotationDbi_1.34.4      
+[73] GenomicRanges_1.24.3       beanplot_1.2              
+\end{Soutput}
+\end{Schunk}
 
 \bibliography{qsmoothRef}
 

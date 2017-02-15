@@ -15,7 +15,7 @@ of each sample is technical variation. Normalization is achieved by forcing the 
 to be the same and the average distribution, obtained by taking the average of each quantile 
 across samples, is used as the reference. 
 
-### How to evaulate if global normalization methods are appropriate? 
+### How to evaluate if global normalization methods are appropriate? 
 
 While these assumptions may be reasonable in certain experiments, they may not always be 
 appropriate. Recently, an R/Bioconductor package ([`quantro`](http://www.bioconductor.org/packages/release/bioc/html/quantro.html))
@@ -77,7 +77,7 @@ qsmoothWeights(qs) # extract smoothed quantile normalized weights
 ```
 
 The weights can be directly plotted using the `qsmoothPlotWeights()` function. 
-```s
+```
 qsmoothPlotWeights(qs) # plot weights 
 ```
 

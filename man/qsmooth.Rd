@@ -9,7 +9,8 @@
 \usage{
 qstats(object, groupFactor, qRange, window = 0.05)
 
-qsmooth(object, groupFactor, normFactors = NULL, window = 0.05)
+qsmooth(object, groupFactor, batch = NULL, normFactors = NULL,
+  window = 0.05)
 }
 \arguments{
 \item{object}{an object which is inherited from an 
@@ -19,14 +20,19 @@ data frame or matrix with observations
 (e.g. probes or genes) on the rows and samples as the 
 columns.}
 
-\item{groupFactor}{a group level factor associated with 
-each sample or column in the \code{object}. The order of the
-\code{groupFactor} must match the order of the columns in
-\code{object}.}
+\item{groupFactor}{a group level continuous or categorial 
+covariate associated with each sample or column in the 
+\code{object}. The order of the \code{groupFactor} must 
+match the order of the columns in \code{object}.}
 
 \item{window}{window size for running median which is 
 a fraction of the number of rows in \code{object}. 
 Default is 0.05.}
+
+\item{batch}{(Optional) batch covariate (multiple batches are not allowed). 
+If batch covariate is provided, \code{Combat()} from \code{sva} 
+is used prior to qsmooth normalization to remove batch effects. 
+See \code{Combat()} for more details.}
 
 \item{normFactors}{optional normalization scaling factors.}
 
@@ -37,10 +43,10 @@ data frame or matrix with observations
 (e.g. probes or genes) on the rows and samples as the 
 columns.}
 
-\item{groupFactor}{a group level factor associated with 
-each sample or column in the \code{object}. The order of the
-\code{groupFactor} must match the order of the columns in
-\code{object}.}
+\item{groupFactor}{a group level continuous or categorial 
+covariate associated with each sample or column in the 
+\code{object}. The order of the \code{groupFactor} must 
+match the order of the columns in \code{object}.}
 
 \item{window}{window size for running median which is 
 a fraction of the number of rows in \code{object}. 
@@ -96,6 +102,7 @@ within groups.
 See the vignette for more details.
 }
 \examples{
+library(Biobase)
 library(bodymapRat)
 data(bodymapRat)
 # select lung and liver samples, stage 21 weeks, and bio reps
@@ -105,19 +112,20 @@ keepRows = rowMeans(exprs(bodymapRat)) > 10 # Filter out low counts
 bodymapRat <- bodymapRat[keepRows,keepColumns]
 pd <- pData(bodymapRat)
 
-qs <- qstats(object = p, groupFactor = pd$CellType, window = 0.05)
+qs <- qstats(object = exprs(bodymapRat), groupFactor = pd$organ, window = 0.05)
 
+library(Biobase)
 library(bodymapRat)
 data(bodymapRat)
 # select lung and liver samples, stage 21 weeks, and bio reps
-keepColumns = (pData(bodymapRat)$organ \%in\% c("Lung", "Liver")) & 
+keepColumns = (pData(bodymapRat)$organ \%in\% c("Lung")) & 
          (pData(bodymapRat)$stage == 21) & (pData(bodymapRat)$techRep == 1)
 keepRows = rowMeans(exprs(bodymapRat)) > 10 # Filter out low counts
 bodymapRat <- bodymapRat[keepRows,keepColumns]
 pd <- pData(bodymapRat)
 pd$group <- paste(pd$sex, pd$organ, sep="_")
 
-qsNorm <- qsmooth(object = exprs(bodymapRat), groupFactor = pd$organ)
+qsNorm <- qsmooth(object = exprs(bodymapRat), groupFactor = pd$pd$group)
 
 }
 

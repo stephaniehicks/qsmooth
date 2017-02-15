@@ -20,10 +20,10 @@ setClass(Class = "qsmooth",
 #' data frame or matrix with observations
 #' (e.g. probes or genes) on the rows and samples as the 
 #' columns.  
-#' @param groupFactor a group level factor associated with 
-#' each sample or column in the \code{object}. The order of the
-#' \code{groupFactor} must match the order of the columns in
-#' \code{object}. 
+#' @param groupFactor a group level continuous or categorial 
+#' covariate associated with each sample or column in the 
+#' \code{object}. The order of the \code{groupFactor} must 
+#' match the order of the columns in \code{object}. 
 #' @param window window size for running median which is 
 #' a fraction of the number of rows in \code{object}. 
 #' Default is 0.05. 
@@ -48,6 +48,7 @@ setClass(Class = "qsmooth",
 #' 
 #'
 #' @examples
+#' library(Biobase)
 #' library(bodymapRat)
 #' data(bodymapRat)
 #' # select lung and liver samples, stage 21 weeks, and bio reps
@@ -57,13 +58,13 @@ setClass(Class = "qsmooth",
 #' bodymapRat <- bodymapRat[keepRows,keepColumns]
 #' pd <- pData(bodymapRat)
 #' 
-#' qs <- qstats(object = p, groupFactor = pd$CellType, window = 0.05)
+#' qs <- qstats(object = exprs(bodymapRat), groupFactor = pd$organ, window = 0.05)
 #' 
 #' @rdname qsmooth
 #' @export
 qstats <- function(object, groupFactor, qRange, window = 0.05)
 {
-    
+  
     # Compute sample quantiles
     Q = apply(object, 2, sort) 
     
@@ -74,8 +75,11 @@ qstats <- function(object, groupFactor, qRange, window = 0.05)
     SST = rowSums((Q - Qref)^2)
     
     # Compute SSB
-    f = factor(as.character(groupFactor))
-    X = model.matrix(~ 0 + f)
+    if(is.factor(groupFactor)){
+      X = model.matrix(~ 0 + groupFactor)
+    } else {
+      X = model.matrix(~ groupFactor)
+    }
     QBETAS = t(solve(t(X) %*% X) %*% t(X) %*% t(Q))
     Qhat = QBETAS %*% t(X)
     SSB = rowSums((Qhat - Qref)^2)
@@ -106,10 +110,14 @@ qstats <- function(object, groupFactor, qRange, window = 0.05)
 #' data frame or matrix with observations
 #' (e.g. probes or genes) on the rows and samples as the 
 #' columns.  
-#' @param groupFactor a group level factor associated with 
-#' each sample or column in the \code{object}. The order of the
-#' \code{groupFactor} must match the order of the columns in
-#' \code{object}. 
+#' @param groupFactor a group level continuous or categorial 
+#' covariate associated with each sample or column in the 
+#' \code{object}. The order of the \code{groupFactor} must 
+#' match the order of the columns in \code{object}. 
+#' @param batch (Optional) batch covariate (multiple batches are not allowed). 
+#' If batch covariate is provided, \code{Combat()} from \code{sva} 
+#' is used prior to qsmooth normalization to remove batch effects. 
+#' See \code{Combat()} for more details. 
 #' @param normFactors optional normalization scaling factors.
 #' @param window window size for running median which is 
 #' a fraction of the number of rows in \code{object}. 
@@ -152,6 +160,7 @@ qstats <- function(object, groupFactor, qRange, window = 0.05)
 #' @importFrom methods show
 #' 
 #' @examples
+#' library(Biobase)
 #' library(bodymapRat)
 #' data(bodymapRat)
 #' # select lung and liver samples, stage 21 weeks, and bio reps
@@ -162,11 +171,11 @@ qstats <- function(object, groupFactor, qRange, window = 0.05)
 #' pd <- pData(bodymapRat)
 #' pd$group <- paste(pd$sex, pd$organ, sep="_")
 #' 
-#' qsNorm <- qsmooth(object = exprs(bodymapRat), groupFactor = pd$organ)
+#' qsNorm <- qsmooth(object = exprs(bodymapRat), groupFactor = pd$pd$group)
 #' 
 #' @rdname qsmooth
 #' @export
-qsmooth <- function(object, groupFactor, normFactors = NULL, window = 0.05)
+qsmooth <- function(object, groupFactor, batch = NULL, normFactors = NULL, window = 0.05)
 {
     
     if(inherits(object, "eSet")){
@@ -178,8 +187,6 @@ qsmooth <- function(object, groupFactor, normFactors = NULL, window = 0.05)
         stop("Must provide groupFactor to specify the group 
              level information associated with each sample or 
              or column in object.")
-    } else {
-        groupFactor <- as.factor(groupFactor)
     }
     
     if(ncol(object) != length(groupFactor)){
@@ -187,8 +194,8 @@ qsmooth <- function(object, groupFactor, normFactors = NULL, window = 0.05)
              length of groupFactor.")
     }
    
-    if(length(levels(groupFactor)) < 2){
-      stop(paste0("Number of levels in groupFactor is less than 2 (levels(groupFactor): ", levels(groupFactor), "). 
+    if(is.factor(groupFactor) & length(levels(groupFactor)) < 2){
+      stop(paste0("groupFactor is a factor and number of levels in groupFactor is less than 2 (levels(groupFactor): ", levels(groupFactor), "). 
                   Must provide a factor with 2 or more levels to use qsmooth."))
     }
   
@@ -199,6 +206,11 @@ qsmooth <- function(object, groupFactor, normFactors = NULL, window = 0.05)
         object <- sweep(object, 2, normFactors, FUN = "/") 
     }
     
+    # If batch is provided, run sva::ComBat to remove batch effects
+    if(!is.null(batch)){
+      object <- ComBat(object, factor(batch))
+    }
+  
     # Compute quantile statistics
     qs <- qstats(object=object, groupFactor=groupFactor, window=window)
     Qref <- qs$Qref 
