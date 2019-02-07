@@ -1,0 +1,16 @@
+bibentry(bibtype = "Article",
+           key = "qsmooth",
+           author = c(person(c("Stephanie", "C."), "Hicks"),
+                      person("Kwame", "Okrah")
+                      person(c("Joseph", "N."), "Paulson")
+                      person("John", "Quackenbush")                      
+                      person(c("Rafael", "A."), "Irizarry")
+                      person("Hector", "Corrado Bravo")),
+           title = "Smooth quantile normalization",
+           journal = "Biostatistics",
+           year = "2018",
+           volume = "19",
+           number = "2",
+           pubmed = "29036413",
+	   header = "The qsmooth package is described in:")
+
