@@ -1,33 +1,34 @@
 Package: qsmooth
 Title: Smooth quantile normalization
-Version: 0.0.1
-Date: 2017-02-15
-Author: Stephanie Hicks, Kwame Okrah, Hector Corrada Bravo and Rafael Irizarry
-Maintainer: Stephanie Hicks <stephaniechicks@gmail.com>
-Imports:
-    Biobase,
-    minfi,
-    sva,
-    doParallel,
-    foreach,
-    iterators
-Depends:
-    R (>= 3.1.2)
-Suggests:
+Version: 0.99.0
+Date: 2019-02-04
+Authors@R: c(
+    person(c("Stephanie", "C."), "Hicks", role = c("aut", "cre"), 
+		email = "shicks19@jhu.edu"),
+    person("Kwame", "Okrah", role = "aut"), 
+    person("Hector", "Corrada Bravo", role = "aut"), 
+    person("Rafael", "Irizarry", role = "aut"))
+Imports: 
+    SummarizedExperiment, 
+    minfi, sva, stats, methods, 
+    Biobase, graphics
+Depends: R (>= 3.5.1), SummarizedExperiment, sva
+Suggests: 
     bodymapRat,
     quantro,
     knitr,
-    RUnit,
-    BiocStyle
+    rmarkdown,
+    BiocStyle,
+    testthat
 VignetteBuilder: knitr
-Roxygen: list(wrap = FALSE)
-License: GPL (>=3)
+RoxygenNote: 6.1.1
+Encoding: UTF-8
+License: CC BY 4.0
 Description: Smooth quantile normalization
     is a generalization of quantile normalization,
     which is average of the two types of assumptions
     about the data generation process: quantile
     normalization and quantile normalization between
     groups.
-biocViews: Normalization, Preprocessing, MultipleComparison,
-    Microarray, Sequencing
-RoxygenNote: 5.0.1
+biocViews: Normalization, Preprocessing, MultipleComparison, 
+    Microarray, Sequencing, RNASeq, BatchEffect

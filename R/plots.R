@@ -18,28 +18,39 @@
 #' The red line is the observed test statistic
 #' \code{quantroStat} from \code{qsmooth()}.
 #' 
+#' @importFrom graphics par
+#' @importFrom graphics plot
+#' @importFrom graphics abline
+#' 
 #' @export
 #' @examples
-#' \donttest{
-#' library(minfi)
-#' data(flowSorted)
-#' p <- getBeta(flowSorted, offset = 100)
-#' pd <- pData(flowSorted)
+#' library(SummarizedExperiment)
+#' library(bodymapRat)
+#' data(bodymapRat)
+#' # select lung and liver samples, stage 21 weeks, and bio reps
+#' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
+#'          (colData(bodymapRat)$stage == 21) & 
+#'          (colData(bodymapRat)$techRep == 1)
+#' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
+#' bodymapRat <- bodymapRat[keepRows,keepColumns]
+#' pd <- colData(bodymapRat)
+#' pd$group <- paste(pd$sex, pd$organ, sep="_")
 #' 
-#' library(doParallel)
-#' registerDoParallel(cores=4)
-#' qtest <- quantro(p, pd$CellType, B = 100)
-#' quantroPlot(qtest)
-#' }
-qsmoothPlotWeights <- function(object, savePlot = FALSE, xLab = NULL, 
-                               yLab = NULL, mainLab = NULL, binWidth = NULL){
+#' qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
+#'                   groupFactor = colData(bodymapRat)[keepColumns, 
+#'                   ]$organ)
+#' qsmoothPlotWeights(qsNorm)
+qsmoothPlotWeights <- function(object, savePlot = FALSE,
+                               xLab = NULL, yLab = NULL, 
+                               mainLab = NULL, 
+                               binWidth = NULL){
     oldpar = par(mfrow=c(1,1), mar=c(4, 4, 1.5, 0.5))
     w = object@weights
     lq = nrow(object@qsmoothData)
-    u = (1:lq - 0.5) / lq
+    u = (seq_len(lq) - 0.5) / lq
     
-    if (length(u) > 1e4) { # do not plot more than 10000 points
-        sel = sample(1:lq, 1e4)
+    if (length(u) > 1e4) { # do not plot > 10000 points
+        sel = sample(seq_len(lq), 1e4)
         plot(u[sel], w[sel], pch=".", main="qsmooth weights",
              xlab=" quantiles", ylab="Weight", ylim=c(0, 1))
     } else{
@@ -47,8 +58,5 @@ qsmoothPlotWeights <- function(object, savePlot = FALSE, xLab = NULL,
              xlab="quantiles", ylab="Weight", ylim=c(0, 1))
     }
     abline(h=0.5, v=0.5, col="red", lty=2)
-    
     par(oldpar)
 }
-
-# qsmoothPlotWeights()

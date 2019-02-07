@@ -4,8 +4,8 @@
 \alias{qsmoothPlotWeights}
 \title{Plot weights from \code{qsmooth} function.}
 \usage{
-qsmoothPlotWeights(object, savePlot = FALSE, xLab = NULL, yLab = NULL,
-  mainLab = NULL, binWidth = NULL)
+qsmoothPlotWeights(object, savePlot = FALSE, xLab = NULL,
+  yLab = NULL, mainLab = NULL, binWidth = NULL)
 }
 \arguments{
 \item{object}{a qsmooth object from \code{qsmooth}}
@@ -34,16 +34,20 @@ null test statistics from permutation test in the \code{qsmooth}
 function.
 }
 \examples{
-\donttest{
-library(minfi)
-data(flowSorted)
-p <- getBeta(flowSorted, offset = 100)
-pd <- pData(flowSorted)
+library(SummarizedExperiment)
+library(bodymapRat)
+data(bodymapRat)
+# select lung and liver samples, stage 21 weeks, and bio reps
+keepColumns = (colData(bodymapRat)$organ \%in\% c("Lung", "Liver")) & 
+         (colData(bodymapRat)$stage == 21) & 
+         (colData(bodymapRat)$techRep == 1)
+keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
+bodymapRat <- bodymapRat[keepRows,keepColumns]
+pd <- colData(bodymapRat)
+pd$group <- paste(pd$sex, pd$organ, sep="_")
 
-library(doParallel)
-registerDoParallel(cores=4)
-qtest <- quantro(p, pd$CellType, B = 100)
-quantroPlot(qtest)
+qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
+                  groupFactor = colData(bodymapRat)[keepColumns, 
+                  ]$organ)
+qsmoothPlotWeights(qsNorm)
 }
-}
-

@@ -3,9 +3,9 @@
 \docType{methods}
 \name{qsmoothData}
 \alias{qsmoothData}
-\alias{qsmoothData,qsmooth-method}
 \alias{qsmoothData.qsmooth}
-\title{Accessors for the 'qsmoothData' slot of a qsmooth object.}
+\alias{qsmoothData,qsmooth-method}
+\title{Generic function that returns the qsmooth normalized data}
 \usage{
 qsmoothData(object)
 
@@ -14,11 +14,39 @@ qsmoothData(object)
 \S4method{qsmoothData}{qsmooth}(object)
 }
 \arguments{
+\item{object}{a qsmooth object}
+
 \item{object}{a \code{qsmooth} object}
 
 \item{...}{other}
+
+\item{object}{an object of class \code{qsmooth}.}
+}
+\value{
+qsmooth normalized data
 }
 \description{
+Given a qsmooth object, this function returns the 
+qsmooth normalized data
+
 Accessors for the 'qsmoothData' slot of a qsmooth object.
 }
+\examples{
+library(SummarizedExperiment)
+library(bodymapRat)
+data(bodymapRat)
+# select lung and liver samples, stage 21 weeks, and bio reps
+keepColumns = (colData(bodymapRat)$organ \%in\% c("Lung", "Liver")) & 
+         (colData(bodymapRat)$stage == 21) & 
+         (colData(bodymapRat)$techRep == 1)
+keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
+bodymapRat <- bodymapRat[keepRows,keepColumns]
+pd <- colData(bodymapRat)
+pd$group <- paste(pd$sex, pd$organ, sep="_")
 
+qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
+                  groupFactor = colData(bodymapRat)[keepColumns, 
+                  ]$organ)
+qsmoothData(qsNorm)
+
+}

@@ -3,5 +3,44 @@
 \docType{class}
 \name{qsmooth-class}
 \alias{qsmooth-class}
-\title{qsmooth}
+\alias{qsmooth}
+\title{the qsmooth class
 
+Objects of this class store all the values needed information 
+to work with a qsmooth object.}
+\value{
+\code{qsmoothWeights} returns the qsmooth weights and 
+\code{qsmoothData} returns the qsmooth normalized data
+}
+\description{
+the qsmooth class
+
+Objects of this class store all the values needed information 
+to work with a qsmooth object.
+}
+\section{Slots}{
+
+\describe{
+\item{\code{weights}}{qsmooth weights}
+
+\item{\code{qsmoothData}}{qsmooth normalized data}
+}}
+
+\examples{
+library(SummarizedExperiment)
+library(bodymapRat)
+data(bodymapRat)
+# select lung and liver samples, stage 21 weeks, and bio reps
+keepColumns = (colData(bodymapRat)$organ \%in\% c("Lung", "Liver")) & 
+         (colData(bodymapRat)$stage == 21) & 
+         (colData(bodymapRat)$techRep == 1)
+keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
+bodymapRat <- bodymapRat[keepRows,keepColumns]
+pd <- colData(bodymapRat)
+pd$group <- paste(pd$sex, pd$organ, sep="_")
+
+qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
+                  groupFactor = colData(bodymapRat)[keepColumns, 
+                  ]$organ)
+
+}

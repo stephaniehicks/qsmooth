@@ -1,0 +1,90 @@
+#' @title qstats 
+#'
+#' @description This function is a helper function that 
+#' computes quantile statistics for the function 
+#' \code{qsmooth}. 
+#'
+#' @param object an object which is inherited from an 
+#' \code{eSet} such as an \code{ExpressionSet} or 
+#' \code{MethylSet} object. The \code{object} can also be a 
+#' data frame or matrix with observations
+#' (e.g. probes or genes) on the rows and samples as the 
+#' columns.  
+#' @param groupFactor a group level continuous or categorial 
+#' covariate associated with each sample or column in the 
+#' \code{object}. The order of the \code{groupFactor} must 
+#' match the order of the columns in \code{object}. 
+#' @param window window size for running median which is 
+#' a fraction of the number of rows in \code{object}. 
+#' Default is 0.05. 
+#' 
+#' @return A list of quantile statistics including 
+#' \item{Q}{sample quantiles}
+#' \item{Qref}{reference quantile}
+#' \item{Qhat}{linear model fit at each quantile}
+#' \item{SST}{total sum of squares}
+#' \item{SSB}{between sum of squares}
+#' \item{SSE}{within sum of squares}
+#' \item{roughWeights}{SSE / SST}
+#' \item{smoothWeights}{smoothed weights computed using a 
+#' running median with a given \code{window} size.}
+#' 
+#' @aliases qstats
+#' 
+#' @docType methods
+#' @importFrom stats runmed
+#' @importFrom stats model.matrix
+#'
+#' @examples
+#' library(SummarizedExperiment)
+#' library(bodymapRat)
+#' data(bodymapRat)
+#' # select lung and liver samples, stage 21 weeks, and bio reps
+#' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
+#'          (colData(bodymapRat)$stage == 21) & 
+#'          (colData(bodymapRat)$techRep == 1)
+#' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
+#' bodymapRat <- bodymapRat[keepRows,keepColumns]
+#' pd <- colData(bodymapRat)
+#' 
+#' qs <- qstats(object = assay(bodymapRat), groupFactor = pd$organ, 
+#'              window = 0.05)
+#' 
+#' @rdname qsmooth
+#' @export
+qstats <- function(object, groupFactor, qRange, 
+                   window = 0.05)
+  {
+  # Compute sample quantiles
+  Q = apply(object, 2, sort) 
+  
+  # Compute quantile reference
+  Qref = rowMeans(Q)  
+  
+  # Compute SST
+  SST = rowSums((Q - Qref)^2)
+  
+  # Compute SSB
+  if(is.factor(groupFactor)){
+    X = model.matrix(~ 0 + groupFactor)
+  } else {
+    X = model.matrix(~ groupFactor)
+  }
+  
+  QBETAS = t(solve(t(X) %*% X) %*% t(X) %*% t(Q))
+  Qhat = QBETAS %*% t(X)
+  SSB = rowSums((Qhat - Qref)^2)
+  
+  # Compute weights
+  roughWeights = 1 - SSB / SST
+  roughWeights[SST < 1e-6] = 1
+  
+  # Compute smooth weights
+  k = floor(window * nrow(Q))
+  if (k %% 2 == 0) k = k + 1
+  smoothWeights = runmed(roughWeights, k = k, endrule="constant")
+  
+  list(Q=Q, Qref=Qref, Qhat=Qhat, SST=SST, SSB=SSB, SSE=SST-SSB, 
+       roughWeights=roughWeights, smoothWeights=smoothWeights)
+}
+
