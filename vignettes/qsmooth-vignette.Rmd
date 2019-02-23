@@ -19,6 +19,8 @@ date: Feburary 05, 2019
 package: bodymapRat
 output: html_document
 bibliography: qsmoothRef.bib
+vignette: >
+    %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
@@ -30,9 +32,9 @@ BiocStyle::markdown()
 ```
 
 <!--
-  %% \VignetteEngine{knitr::knitr}
+    % \VignetteEngine{knitr::knitr}
+    %\VignetteIndexEntry{The qsmooth data user's guide}
 -->
-
 
 ## Introduction
 
@@ -187,9 +189,9 @@ The `qsmooth()` function must have two objects as input:
 
 1. `object`: a data frame or matrix with observations
 (e.g. probes or genes) on the rows and samples as the 
-columns. `qsmooth()` can accept objects that inherit
-`eSets` such as an `ExpressionSet` or `MethylSet`. 
-In this case, the `groupFactor` must still be provided.
+columns. `qsmooth()` accepts objects which are a data 
+frame or matrix with observations (e.g. probes or genes) 
+on the rows and samples as the columns.
 2. `groupFactor`: a continuous or categorial covariate
 that represents the group level biological variation 
 about each sample. For example if the samples 

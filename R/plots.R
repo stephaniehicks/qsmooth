@@ -27,25 +27,23 @@
 #' library(SummarizedExperiment)
 #' library(bodymapRat)
 #' data(bodymapRat)
+#' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
 #' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
 #'          (colData(bodymapRat)$stage == 21) & 
 #'          (colData(bodymapRat)$techRep == 1)
 #' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
 #' bodymapRat <- bodymapRat[keepRows,keepColumns]
-#' pd <- colData(bodymapRat)
-#' pd$group <- paste(pd$sex, pd$organ, sep="_")
 #' 
-#' qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
-#'                   groupFactor = colData(bodymapRat)[keepColumns, 
-#'                   ]$organ)
+#' qsNorm <- qsmooth(object = assay(bodymapRat), 
+#'                   groupFactor = colData(bodymapRat)$organ)
 #' qsmoothPlotWeights(qsNorm)
 qsmoothPlotWeights <- function(object, savePlot = FALSE,
                                xLab = NULL, yLab = NULL, 
                                mainLab = NULL, 
                                binWidth = NULL){
     oldpar = par(mfrow=c(1,1), mar=c(4, 4, 1.5, 0.5))
-    w = object@weights
+    w = object@qsmoothWeights
     lq = nrow(object@qsmoothData)
     u = (seq_len(lq) - 0.5) / lq
     

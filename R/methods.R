@@ -9,35 +9,36 @@
 #' @name qsmoothWeights
 #' @rdname qsmoothWeights
 #' @aliases qsmoothWeights qsmoothWeights,qsmooth-method
-#' @param object a \code{qsmooth} object
-#' @param ... other 
+#' @param object an object of class \code{qsmooth}.
+#' 
+#' @return The weights calculated for each feature 
+#' after applying smoothed quantile normalization. 
+#' 
+#' @export
 #' 
 #' @examples
 #' library(SummarizedExperiment)
 #' library(bodymapRat)
 #' data(bodymapRat)
+#' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
 #' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
 #'          (colData(bodymapRat)$stage == 21) & 
 #'          (colData(bodymapRat)$techRep == 1)
 #' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
 #' bodymapRat <- bodymapRat[keepRows,keepColumns]
-#' pd <- colData(bodymapRat)
-#' pd$group <- paste(pd$sex, pd$organ, sep="_")
 #' 
-#' qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
-#'                   groupFactor = colData(bodymapRat)[keepColumns, 
-#'                   ]$organ)
+#' qsNorm <- qsmooth(object = assay(bodymapRat), 
+#'                   groupFactor = colData(bodymapRat)$organ)
 #' qsmoothWeights(qsNorm)
 #' 
-qsmoothWeights.qsmooth <- function(object) object@qsmoothWeights
-
-
-#' @rdname qsmoothWeights
-#' @export
-#' @param object an object of class \code{qsmooth}.
-setMethod("qsmoothWeights", signature(object="qsmooth"), 
-          qsmoothWeights.qsmooth)
+setMethod(
+  f = "qsmoothWeights", 
+  signature = "qsmooth",
+  definition = function(object) {
+            return(object@qsmoothWeights)
+          }
+)
 
 #' @title Accessors for the 'qsmoothData' slot of a qsmooth object.
 #' 
@@ -50,32 +51,33 @@ setMethod("qsmoothWeights", signature(object="qsmooth"),
 #' @name qsmoothData
 #' @rdname qsmoothData
 #' @aliases qsmoothData qsmoothData,qsmooth-method
-#' @param object a \code{qsmooth} object
-#' @param ... other 
+#' @param object an object of class \code{qsmooth}.
+#' 
+#' @return The normalized data after applying 
+#' smoothed quantile normalization. 
+#' 
+#' @export
 #' 
 #' @examples
 #' library(SummarizedExperiment)
 #' library(bodymapRat)
 #' data(bodymapRat)
+#' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
 #' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
 #'          (colData(bodymapRat)$stage == 21) & 
 #'          (colData(bodymapRat)$techRep == 1)
 #' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
 #' bodymapRat <- bodymapRat[keepRows,keepColumns]
-#' pd <- colData(bodymapRat)
-#' pd$group <- paste(pd$sex, pd$organ, sep="_")
 #' 
-#' qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
-#'                   groupFactor = colData(bodymapRat)[keepColumns, 
-#'                   ]$organ)
+#' qsNorm <- qsmooth(object = assay(bodymapRat), 
+#'                   groupFactor = colData(bodymapRat)$organ)
 #' qsmoothData(qsNorm)
 #' 
-qsmoothData.qsmooth <- function(object) object@qsmoothData
-
-#' @rdname qsmoothData
-#' @export
-#' data
-#' @param object an object of class \code{qsmooth}.
-setMethod("qsmoothData", signature(object="qsmooth"), 
-          qsmoothData.qsmooth)
+setMethod(
+  f = "qsmoothData", 
+  signature = "qsmooth",
+  definition = function(object) {
+            return(object@qsmoothData)
+          }
+)

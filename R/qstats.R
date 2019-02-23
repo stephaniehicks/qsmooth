@@ -4,12 +4,9 @@
 #' computes quantile statistics for the function 
 #' \code{qsmooth}. 
 #'
-#' @param object an object which is inherited from an 
-#' \code{eSet} such as an \code{ExpressionSet} or 
-#' \code{MethylSet} object. The \code{object} can also be a 
-#' data frame or matrix with observations
-#' (e.g. probes or genes) on the rows and samples as the 
-#' columns.  
+#' @param object an object which is a data frame or 
+#' matrix with observations (e.g. probes or genes) on 
+#' the rows and samples as the columns.  
 #' @param groupFactor a group level continuous or categorial 
 #' covariate associated with each sample or column in the 
 #' \code{object}. The order of the \code{groupFactor} must 
@@ -39,21 +36,21 @@
 #' library(SummarizedExperiment)
 #' library(bodymapRat)
 #' data(bodymapRat)
+#' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
 #' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
 #'          (colData(bodymapRat)$stage == 21) & 
 #'          (colData(bodymapRat)$techRep == 1)
 #' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
 #' bodymapRat <- bodymapRat[keepRows,keepColumns]
-#' pd <- colData(bodymapRat)
 #' 
-#' qs <- qstats(object = assay(bodymapRat), groupFactor = pd$organ, 
+#' qs <- qstats(object = assay(bodymapRat), 
+#'              groupFactor = colData(bodymapRat)$organ, 
 #'              window = 0.05)
 #' 
-#' @rdname qsmooth
+#' @rdname qstats
 #' @export
-qstats <- function(object, groupFactor, qRange, 
-                   window = 0.05)
+qstats <- function(object, groupFactor, window = 0.05)
   {
   # Compute sample quantiles
   Q = apply(object, 2, sort) 

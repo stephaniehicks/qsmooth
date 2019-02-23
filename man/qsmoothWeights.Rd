@@ -3,27 +3,19 @@
 \docType{methods}
 \name{qsmoothWeights}
 \alias{qsmoothWeights}
-\alias{qsmoothWeights.qsmooth}
 \alias{qsmoothWeights,qsmooth-method}
 \title{Generic function that returns the qsmooth weights}
 \usage{
 qsmoothWeights(object)
 
 \S4method{qsmoothWeights}{qsmooth}(object)
-
-\S4method{qsmoothWeights}{qsmooth}(object)
 }
 \arguments{
-\item{object}{a qsmooth object}
-
-\item{object}{a \code{qsmooth} object}
-
-\item{...}{other}
-
 \item{object}{an object of class \code{qsmooth}.}
 }
 \value{
-qsmooth weights
+The weights calculated for each feature 
+after applying smoothed quantile normalization.
 }
 \description{
 Given a qsmooth object, this function returns the 
@@ -35,18 +27,16 @@ Accessors for the 'qsmoothWeights' slot of a qsmooth object.
 library(SummarizedExperiment)
 library(bodymapRat)
 data(bodymapRat)
+
 # select lung and liver samples, stage 21 weeks, and bio reps
 keepColumns = (colData(bodymapRat)$organ \%in\% c("Lung", "Liver")) & 
          (colData(bodymapRat)$stage == 21) & 
          (colData(bodymapRat)$techRep == 1)
 keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
 bodymapRat <- bodymapRat[keepRows,keepColumns]
-pd <- colData(bodymapRat)
-pd$group <- paste(pd$sex, pd$organ, sep="_")
 
-qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
-                  groupFactor = colData(bodymapRat)[keepColumns, 
-                  ]$organ)
+qsNorm <- qsmooth(object = assay(bodymapRat), 
+                  groupFactor = colData(bodymapRat)$organ)
 qsmoothWeights(qsNorm)
 
 }

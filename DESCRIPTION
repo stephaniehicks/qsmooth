@@ -10,16 +10,12 @@ Authors@R: c(
     person("Rafael", "Irizarry", role = "aut"))
 Imports: 
     SummarizedExperiment, 
-    minfi, sva, stats, methods, 
-    Biobase, graphics
-Depends: R (>= 3.5.1), SummarizedExperiment, sva
+    sva, stats, methods, graphics
+Depends: R (>= 3.5.1)
 Suggests: 
-    bodymapRat,
-    quantro,
-    knitr,
-    rmarkdown,
-    BiocStyle,
-    testthat
+    bodymapRat, quantro,
+    knitr, rmarkdown,
+    BiocStyle, testthat
 VignetteBuilder: knitr
 RoxygenNote: 6.1.1
 Encoding: UTF-8

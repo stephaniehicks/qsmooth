@@ -5,12 +5,9 @@
 #' normalization. This function defines the qsmooth class 
 #' and constructor. 
 #'
-#' @param object an object which is inherited from an 
-#' \code{eSet} such as an \code{ExpressionSet} or 
-#' \code{MethylSet} object. The \code{object} can also be a 
-#' data frame or matrix with observations
-#' (e.g. probes or genes) on the rows and samples as the 
-#' columns.  
+#' @param object an object which is a data frame or 
+#' matrix with observations (e.g. probes or genes) on 
+#' the rows and samples as the columns.  
 #' @param groupFactor a group level continuous or categorial 
 #' covariate associated with each sample or column in the 
 #' \code{object}. The order of the \code{groupFactor} must 
@@ -59,9 +56,7 @@
 #' @aliases qsmooth
 #' 
 #' @docType methods
-#' @name show
-#' @importFrom Biobase exprs
-#' @importFrom minfi getBeta
+#' @name qsmooth
 #' @importFrom sva ComBat
 #' @importFrom SummarizedExperiment assay
 #' @importFrom stats ave
@@ -70,34 +65,25 @@
 #' library(SummarizedExperiment)
 #' library(bodymapRat)
 #' data(bodymapRat)
+#' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
 #' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
 #'          (colData(bodymapRat)$stage == 21) & 
 #'          (colData(bodymapRat)$techRep == 1)
 #' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
 #' bodymapRat <- bodymapRat[keepRows,keepColumns]
-#' pd <- colData(bodymapRat)
-#' pd$group <- paste(pd$sex, pd$organ, sep="_")
 #' 
-#' qsNorm <- qsmooth(object = asssay(bodymapRat)[keepRows, keepColumns], 
-#'                   groupFactor = colData(bodymapRat)[keepColumns, 
-#'                   ]$organ)
+#' qsNorm <- qsmooth(object = assay(bodymapRat), 
+#'                   groupFactor = colData(bodymapRat)$organ)
+#' qsNorm
 #' 
 #' @rdname qsmooth
 #' @export
-#' 
-
 qsmooth <- function(object, groupFactor, 
                     batch = NULL, normFactors = NULL, 
                     window = 0.05)
 {
   
-  if(inherits(object, "eSet")){
-    if(is(object, "ExpressionSet")){ object <- exprs(object) }
-    if(is(object, "MethylSet")){ object <- getBeta(object, 
-                                                   offset = 100) }
-  }
-
   if(is.null(groupFactor)){  
     stop("Must provide groupFactor to specify the group 
         level information associated with each sample or 
@@ -173,7 +159,7 @@ qsmooth <- function(object, groupFactor,
   }
   
   results <- new("qsmooth")
-  results@weights <- w
+  results@qsmoothWeights <- w
   
   rownames(objectNorm) = rownames(object)
   colnames(objectNorm) = colnames(object)

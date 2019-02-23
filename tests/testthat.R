@@ -1,5 +1,6 @@
-context("checking the qsmooth function")
 library(testthat)
+context("checking the qsmooth function")
+
 library(qsmooth)
 
 test_that("checking dimensions of qsmooth object", {
@@ -11,9 +12,9 @@ test_that("checking dimensions of qsmooth object", {
   qsNorm <- qsmooth(object = x, 
                     groupFactor = group_factor)
   
-  expect_equal(length(qsNorm@weights), n_genes)
-  expect_equal(nrow(qsNorm@qsmoothData), n_genes)
-  expect_equal(ncol(qsNorm@qsmoothData), n_samples)
+  expect_equal(length(qsmoothWeights(qsNorm)), n_genes)
+  expect_equal(nrow(qsmoothData(qsNorm)), n_genes)
+  expect_equal(ncol(qsmoothData(qsNorm)), n_samples)
 })
 
 test_that("checking qsmooth normalized data", {
