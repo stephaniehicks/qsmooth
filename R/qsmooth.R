@@ -23,8 +23,11 @@
 #' Default is 0.05. 
 #' @export 
 #' 
-#' @return A normalized matrix of values after applying 
-#' smoothed quantile normalization. 
+#' @return A object of the class \code{qsmooth} that 
+#' contains a numeric vector of the qsmooth weights in 
+#' the \code{qsmoothWeights} slot and a matrix of normalized  
+#' values after applying smoothed quantile normalization in 
+#' the \code{qsmoothData} slot. 
 #' 
 #' @details 
 #' Quantile normalization is one of the most widely used 
@@ -64,17 +67,17 @@
 #' @examples
 #' library(SummarizedExperiment)
 #' library(bodymapRat)
-#' data(bodymapRat)
+#' bm_dat <- bodymapRat()
 #' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
-#' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
-#'          (colData(bodymapRat)$stage == 21) & 
-#'          (colData(bodymapRat)$techRep == 1)
-#' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
-#' bodymapRat <- bodymapRat[keepRows,keepColumns]
+#' keepColumns = (colData(bm_dat)$organ %in% c("Lung", "Liver")) & 
+#'          (colData(bm_dat)$stage == 21) & 
+#'          (colData(bm_dat)$techRep == 1)
+#' keepRows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+#' bm_dat <- bm_dat[keepRows,keepColumns]
 #' 
-#' qsNorm <- qsmooth(object = assay(bodymapRat), 
-#'                   groupFactor = colData(bodymapRat)$organ)
+#' qsNorm <- qsmooth(object = assay(bm_dat), 
+#'                   groupFactor = colData(bm_dat)$organ)
 #' qsNorm
 #' 
 #' @rdname qsmooth

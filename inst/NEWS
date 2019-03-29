@@ -1,2 +1,8 @@
 Changes in version 0.99.0 (2019-02-07)
 + Submitted to Bioconductor
+
+Changes in version 0.99.2 (2019-03-29)
++ Removed hard-coded date in DESCRIPTION file
++ Included Bioconductor installation instructions in README.md file
++ Changed the name of the vignette so user can use `vigentte("qsmooth")`
++ man. Changed the description of the return to reflect the actual output

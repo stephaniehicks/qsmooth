@@ -47,16 +47,32 @@ Figure below (see the [`vignettes/qsmooth-vignette.pdf`](https://github.com/step
 
 ### Installing qsmooth
 
-Use [devtools](https://github.com/hadley/devtools) to install the latest version of **qsmooth** from Github:
+The R-package **qsmooth** can be installed from Github using the R 
+package [devtools](https://github.com/hadley/devtools): 
+
+
+Use  to install the latest version of **qsmooth** from Github:
 ```s
-require(devtools)
+library(devtools)
 install_github("stephaniehicks/qsmooth")
+```
+
+It can also be installed using Bioconductor: 
+
+```s
+# install BiocManager from CRAN (if not already installed)
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+
+# install qsmooth package
+BiocManager::install("qsmooth")
 ```
 
 After installation, the package can be loaded into R.
 ```s
 library(qsmooth)
 ```
+
 
 # Using qsmooth
 
