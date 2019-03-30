@@ -5,19 +5,22 @@
 #' normalization. This function defines the qsmooth class 
 #' and constructor. 
 #'
-#' @param object an object which is a data frame or 
-#' matrix with observations (e.g. probes or genes) on 
-#' the rows and samples as the columns.  
-#' @param groupFactor a group level continuous or categorial 
+#' @param object an object which is a \code{matrix} or 
+#' \code{data.frame} with observations (e.g. probes or genes) on 
+#' the rows and samples as the columns. Alternatively, 
+#' a user can provide a \code{SummarizedExperiment} object
+#' and the \code{assay(object, "counts")} will be used as input 
+#' for the qsmooth normalization. 
+#' @param group_factor a group level continuous or categorial 
 #' covariate associated with each sample or column in the 
-#' \code{object}. The order of the \code{groupFactor} must 
-#' match the order of the columns in \code{object}. 
+#' \code{object}. The order of the \code{group_factor} must 
+#' match the order of the columns in \code{object}.
 #' @param batch (Optional) batch covariate (multiple 
 #' batches are not allowed). 
 #' If batch covariate is provided, \code{Combat()} from 
 #' \code{sva} is used prior to qsmooth normalization to 
 #' remove batch effects. See \code{Combat()} for more details. 
-#' @param normFactors optional normalization scaling factors.
+#' @param norm_factors optional normalization scaling factors.
 #' @param window window size for running median which is 
 #' a fraction of the number of rows in \code{object}. 
 #' Default is 0.05. 
@@ -61,6 +64,7 @@
 #' @docType methods
 #' @name qsmooth
 #' @importFrom sva ComBat
+#' @importFrom SummarizedExperiment assays
 #' @importFrom SummarizedExperiment assay
 #' @importFrom stats ave
 #' 
@@ -70,46 +74,64 @@
 #' bm_dat <- bodymapRat()
 #' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
-#' keepColumns = (colData(bm_dat)$organ %in% c("Lung", "Liver")) & 
+#' keep_columns = (colData(bm_dat)$organ %in% c("Lung", "Liver")) & 
 #'          (colData(bm_dat)$stage == 21) & 
 #'          (colData(bm_dat)$techRep == 1)
-#' keepRows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
-#' bm_dat <- bm_dat[keepRows,keepColumns]
+#' keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+#' bm_dat <- bm_dat[keep_rows,keep_columns]
 #' 
-#' qsNorm <- qsmooth(object = assay(bm_dat), 
-#'                   groupFactor = colData(bm_dat)$organ)
-#' qsNorm
+#' qs_norm <- qsmooth(object = assay(bm_dat), 
+#'                   group_factor = colData(bm_dat)$organ)
+#' qs_norm
 #' 
 #' @rdname qsmooth
 #' @export
-qsmooth <- function(object, groupFactor, 
-                    batch = NULL, normFactors = NULL, 
+qsmooth <- function(object, group_factor,
+                    batch = NULL, norm_factors = NULL, 
                     window = 0.05)
 {
+
+  if(!(class(object) %in% c("matrix", "data.frame", 
+                       "SummarizedExperiment"))){
+    stop("The class of the object must be a matrix, 
+         data.frame or SummarizedExperiment")
+  }
   
-  if(is.null(groupFactor)){  
-    stop("Must provide groupFactor to specify the group 
+  if(is.data.frame(object)){ object <- as.matrix(object) }
+  
+  if(is(object, "SummarizedExperiment")){ 
+    if("counts" %in% names(assays(object))){ 
+      object <- assay(object, "counts")
+    } else {
+      stop("There is no assay slot named 'counts' inside 
+           the object. Please check the names of the 
+           assay slots using names(assays(object)).")
+    }
+  }
+  
+  if(is.null(group_factor)){  
+    stop("Must provide group_factor to specify the group 
         level information associated with each sample or 
              or column in object.")
   }
   
-  if(ncol(object) != length(groupFactor)){
+  if(ncol(object) != length(group_factor)){
     stop("Number of columns in object does not match 
-             length of groupFactor.")
+             length of group_factor.")
   }
   
-  if(is.factor(groupFactor) & length(levels(groupFactor)) < 2){
-    stop(paste0("groupFactor is a factor and number of levels in 
-                  groupFactor is less than 2 (levels(groupFactor): ",
-                levels(groupFactor), "). Must provide a factor with 
+  if(is.factor(group_factor) & length(levels(group_factor)) < 2){
+    stop(paste0("group_factor is a factor and number of levels in 
+                  group_factor is less than 2 (levels(group_factor): ",
+                levels(group_factor), "). Must provide a factor with 
                   2 or more levels to use qsmooth."))
   }
   
   if(any(is.na(object))){ stop("Object must not contains NAs.") }    
   
   # Scale normalization step
-  if(!is.null(normFactors)) { 
-    object <- sweep(object, 2, normFactors, FUN = "/") 
+  if(!is.null(norm_factors)) { 
+    object <- sweep(object, 2, norm_factors, FUN = "/") 
   }
   
   # If batch is provided, run sva::ComBat to remove batch effects
@@ -118,7 +140,7 @@ qsmooth <- function(object, groupFactor,
   }
   
   # Compute quantile statistics
-  qs <- qstats(object=object, groupFactor=groupFactor,
+  qs <- qstats(object=object, group_factor=group_factor,
                window=window)
   Qref <- qs$Qref 
   Qhat <- qs$Qhat  

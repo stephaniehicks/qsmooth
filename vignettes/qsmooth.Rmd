@@ -132,7 +132,6 @@ Load the package in R
 library(qsmooth)
 ```
 
-
 # Data
 
 The **bodymapRat** package contains an
@@ -151,17 +150,17 @@ lung samples from 21 week old male andfemale rats.
 Four samples are from males and four samples are 
 from females.
 
-```{r data-1, message=FALSE}
+```{r data-1, message=FALSE, warning=FALSE}
 library(SummarizedExperiment)
 library(bodymapRat)
-data(bodymapRat)
+bm_dat <- bodymapRat()
 
 # select lung samples, stage 21 weeks, and only bio reps
-keepColumns = (colData(bodymapRat)$organ == "Lung") &
-    (colData(bodymapRat)$stage == 21) & (colData(bodymapRat)$techRep == 1)
-keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
-bodymapRatE1 <- bodymapRat[keepRows,keepColumns]
-bodymapRatE1
+keep_columns = (colData(bm_dat)$organ == "Lung") &
+    (colData(bm_dat)$stage == 21) & (colData(bm_dat)$techRep == 1)
+keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+bm_dat_e1 <- bm_dat[keep_rows,keep_columns]
+bm_dat_e1
 ```
 
 ## bodymapRat Example 2 - Comparing two tissues
@@ -173,13 +172,12 @@ eight samples are from females.
 
 ```{r data-2, message=FALSE}
 # select brain and liver samples, stage 21 weeks, and only bio reps
-keepColumns = (colData(bodymapRat)$organ %in% c("Brain", "Liver")) &
-         (colData(bodymapRat)$stage == 21) & (colData(bodymapRat)$techRep == 1)
-keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
-bodymapRatE2 <- bodymapRat[keepRows,keepColumns]
-bodymapRatE2
+keepColumns = (colData(bm_dat)$organ %in% c("Brain", "Liver")) &
+         (colData(bm_dat)$stage == 21) & (colData(bm_dat)$techRep == 1)
+keepRows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+bm_dat_e2 <- bm_dat[keepRows,keepColumns]
+bm_dat_e2
 ```
-
 
 # Using the `qsmooth()` function
 
@@ -192,7 +190,7 @@ The `qsmooth()` function must have two objects as input:
 columns. `qsmooth()` accepts objects which are a data 
 frame or matrix with observations (e.g. probes or genes) 
 on the rows and samples as the columns.
-2. `groupFactor`: a continuous or categorial covariate
+2. `group_factor`: a continuous or categorial covariate
 that represents the group level biological variation 
 about each sample. For example if the samples 
 represent two different tissues, provide `qsmooth()` 
@@ -203,8 +201,8 @@ batches are not allowed). If batch covariate is provided,
 `ComBat()` from `sva` is used prior to
 qsmooth normalization to remove batch effects.
 See `ComBat()` for more details.
-3. `normFactors`: **optional** scaling normalization factors.
-Default is `NULL`. If `normFactors` is not equal to
+3. `norm_factors`: **optional** scaling normalization factors.
+Default is `NULL`. If `norm_factors` is not equal to
 `NULL`, the user can provide a vector of scaling factors
 that will be used to modify the expression data set prior to
 applying the `qsmooth` algorithm.
@@ -217,12 +215,13 @@ Default is 0.05.
 ## Running `qsmooth()`
 
 ### Using Example 1 data
+
 In the first example, the groups we are interested 
 in comparing are contained in the `sex` column in 
-the `colData(bodymapRatE1)` dataset. To run the 
+the `colData(bm_dat_e1)` dataset. To run the 
 `qsmooth()` function, input the data object and the
 object containing the phenotypic data. Here we use the
-`bodymapRatE1` data set as an example.
+`bm_dat_e1` data set as an example.
 
 The first row shows the boxplots and density plot
 of the raw data that has been transformed on the 
@@ -236,11 +235,11 @@ of the qsmooth normalized data.
 library(quantro)
 
 par(mfrow=c(2,2))
-pd1 <- colData(bodymapRatE1)
-counts1_ercc <- assay(bodymapRatE1)[grepl("^ERCC", 
-                      rownames( assay(bodymapRatE1))), ]
-counts1 <- assay(bodymapRatE1)[!grepl("^ERCC",
-                      rownames( assay(bodymapRatE1))), ]
+pd1 <- colData(bm_dat_e1)
+counts1_ercc <- assay(bm_dat_e1)[grepl("^ERCC", 
+                      rownames( assay(bm_dat_e1))), ]
+counts1 <- assay(bm_dat_e1)[!grepl("^ERCC",
+                      rownames( assay(bm_dat_e1))), ]
 
 matboxplot(log2(counts1+1), groupFactor = pd1$sex,
            main = "Raw data", xaxt="n", 
@@ -255,14 +254,14 @@ matdensity(log2(counts1+1), groupFactor = pd1$sex,
 legend('topright', levels(factor(pd1$sex)), 
        col = 1:2, lty = 1)
 
-qsNormE1 <- qsmooth(object = counts1, groupFactor = pd1$sex)
-matboxplot(log2(qsmoothData(qsNormE1)+1), groupFactor = pd1$sex,
+qs_norm_e1 <- qsmooth(object = counts1, group_factor = pd1$sex)
+matboxplot(log2(qsmoothData(qs_norm_e1)+1), groupFactor = pd1$sex,
            main = "qsmooth normalized data", ylab = "Expression (log2 scale)",
            xaxt="n")
 axis(1, at=seq_len(length(pd1$sex)), labels=FALSE)
 text(seq_len(length(pd1$sex)), par("usr")[3] -1, labels = pd1$sex, 
      srt = 90, pos = 1, xpd = TRUE)
-matdensity(log2(qsmoothData(qsNormE1)+1), groupFactor = pd1$sex,
+matdensity(log2(qsmoothData(qs_norm_e1)+1), groupFactor = pd1$sex,
            main = "qsmooth normalized data",
            xlab = "Expression (log2 scale)", ylab = "density")
 legend('topright', levels(factor(pd1$sex)), col = 1:2, lty = 1)
@@ -276,7 +275,7 @@ can plotted using the `qsmoothPlotWeights()`
 function (see below).
 
 ```{r plot-qsmooth1-weights}
-qsmoothPlotWeights(qsNormE1)
+qsmoothPlotWeights(qs_norm_e1)
 ```
 
 The weights are calculated for each quantile 
@@ -297,7 +296,7 @@ to the conventional quantile normalization.
 
 ### Using Example 2 data
 
-In the second example (`bodymapRatE2`), the
+In the second example (`bm_dat_e2`), the
 groups we are interested in comparing are the
 two types of tissues in the 21 week old male
 and female rats.
@@ -312,9 +311,9 @@ of the qsmooth normalized data.
 
 ```{r calculate-qsmooth2, fig.height=10, fig.width=10}
 par(mfrow=c(2,2))
-pd2 <- colData(bodymapRatE2)
-counts2 <- assay(bodymapRatE2)[!grepl("^ERCC", 
-                      rownames( assay(bodymapRatE2))), ]
+pd2 <- colData(bm_dat_e2)
+counts2 <- assay(bm_dat_e2)[!grepl("^ERCC", 
+                      rownames( assay(bm_dat_e2))), ]
 pd2$group <- paste(pd2$organ, pd2$sex, sep="_")
 
 matboxplot(log2(counts2+1), groupFactor = factor(pd2$organ),
@@ -331,8 +330,8 @@ matdensity(log2(counts2+1), groupFactor = pd2$organ,
 legend('topright', levels(factor(pd2$organ)), 
        col = 1:2, lty = 1)
 
-qsNormE2 <- qsmooth(object = counts2, groupFactor = pd2$organ)
-matboxplot(log2(qsmoothData(qsNormE2)+1), 
+qs_norm_e2 <- qsmooth(object = counts2, group_factor = pd2$organ)
+matboxplot(log2(qsmoothData(qs_norm_e2)+1), 
            groupFactor = pd2$organ, xaxt="n",
            main = "qsmooth normalized data", 
            ylab = "Expression (log2 scale)")
@@ -340,7 +339,7 @@ axis(1, at=seq_len(length(pd2$organ)), labels=FALSE)
 text(seq_len(length(pd2$organ)), par("usr")[3] -2, 
      labels = pd2$organ, srt = 90, pos = 1, xpd = TRUE)
 
-matdensity(log2(qsmoothData(qsNormE2)+1), groupFactor = pd2$organ,
+matdensity(log2(qsmoothData(qs_norm_e2)+1), groupFactor = pd2$organ,
            main = "qsmooth normalized data",
            xlab = "Expression (log2 scale)", ylab = "density")
 legend('topright', levels(factor(pd2$organ)), col = 1:2, lty = 1)
@@ -357,7 +356,7 @@ can plotted using the `qsmoothPlotWeights()`
 function (see below).
 
 ```{r plot-qsmooth2-weights}
-qsmoothPlotWeights(qsNormE2)
+qsmoothPlotWeights(qs_norm_e2)
 ```
 
 Recall, a weight of 1 indicates quantile 

@@ -4,48 +4,41 @@
 \alias{qsmoothPlotWeights}
 \title{Plot weights from \code{qsmooth} function.}
 \usage{
-qsmoothPlotWeights(object, savePlot = FALSE, xLab = NULL,
-  yLab = NULL, mainLab = NULL, binWidth = NULL)
+qsmoothPlotWeights(object, xLab = "quantiles", yLab = "weights",
+  mainLab = "qsmooth weights")
 }
 \arguments{
 \item{object}{a qsmooth object from \code{qsmooth}}
 
-\item{savePlot}{a TRUE/FALSE object argument
-determining if the plot will be saved for further use or
-immediately displayed on the screen.}
+\item{xLab}{label for x-axis. Default is "quantiles"}
 
-\item{xLab}{label for x-axis}
+\item{yLab}{label for y-axis. Default is "weights"}
 
-\item{yLab}{label for y-axis}
-
-\item{mainLab}{title of plot}
-
-\item{binWidth}{binwidth or histogram. Default is the stat_bin default.}
+\item{mainLab}{title of plot. Default is "qsmooth weights"}
 }
 \value{
-A histogram will be plotted containing the null 
-test statistics when using boostrapped samples. 
-The red line is the observed test statistic
-\code{quantroStat} from \code{qsmooth()}.
+A scatterplot will be created showing the 
+\code{qsmoothWeights} along the y-axis and the 
+quantiles on the x-axis.
 }
 \description{
-This function plots the histogram of the
-null test statistics from permutation test in the \code{qsmooth}
-function.
+This function plots a scatterplot
+showing the \code{qsmoothWeights} along the y-axis
+and the quantiles on the x-axis.
 }
 \examples{
 library(SummarizedExperiment)
 library(bodymapRat)
-data(bodymapRat)
+bm_dat <- bodymapRat()
 
 # select lung and liver samples, stage 21 weeks, and bio reps
-keepColumns = (colData(bodymapRat)$organ \%in\% c("Lung", "Liver")) & 
-         (colData(bodymapRat)$stage == 21) & 
-         (colData(bodymapRat)$techRep == 1)
-keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
-bodymapRat <- bodymapRat[keepRows,keepColumns]
+keep_columns = (colData(bm_dat)$organ \%in\% c("Lung", "Liver")) & 
+         (colData(bm_dat)$stage == 21) & 
+         (colData(bm_dat)$techRep == 1)
+keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+bm_dat <- bm_dat[keep_rows,keep_columns]
 
-qsNorm <- qsmooth(object = assay(bodymapRat), 
-                  groupFactor = colData(bodymapRat)$organ)
-qsmoothPlotWeights(qsNorm)
+qs_norm <- qsmooth(object = assay(bm_dat), 
+                  group_factor = colData(bm_dat)$organ)
+qsmoothPlotWeights(qs_norm)
 }

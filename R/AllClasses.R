@@ -18,17 +18,17 @@
 #' @examples
 #' library(SummarizedExperiment)
 #' library(bodymapRat)
-#' data(bodymapRat)
+#' bm_dat <- bodymapRat()
 #' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
-#' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
-#'          (colData(bodymapRat)$stage == 21) & 
-#'          (colData(bodymapRat)$techRep == 1)
-#' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
-#' bodymapRat <- bodymapRat[keepRows,keepColumns]
+#' keep_columns = (colData(bm_dat)$organ %in% c("Lung", "Liver")) & 
+#'          (colData(bm_dat)$stage == 21) & 
+#'          (colData(bm_dat)$techRep == 1)
+#' keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+#' bm_dat <- bm_dat[keep_rows,keep_columns]
 #' 
-#' qsNorm <- qsmooth(object = assay(bodymapRat), 
-#'                   groupFactor = colData(bodymapRat)$organ)
+#' qs_norm <- qsmooth(object = assay(bm_dat), 
+#'                   group_factor = colData(bm_dat)$organ)
 #'
 setClass(
     Class = "qsmooth", 
@@ -36,4 +36,20 @@ setClass(
         qsmoothWeights = "numeric", qsmoothData = "matrix")
 )
 
-
+#' @importFrom utils head
+#' @importFrom utils tail
+setMethod("show", "qsmooth", 
+          function(object){
+            cat("qsmooth: Smooth quantile normalization\n")
+            cat("   qsmoothWeights (length =", 
+                length(object@qsmoothWeights), "):", "\n")
+            cat(c(head(round(object@qsmoothWeights,3), n=3), "...", 
+                   tail(round(object@qsmoothWeights,3), n=3)), "\n")
+            cat("   qsmoothWeights (nrows =", 
+                dim(object@qsmoothData)[1], ", ncols =", 
+                dim(object@qsmoothData)[2], "):", "\n")
+            print(head(object@qsmoothData))
+            if(dim(object@qsmoothData)[1] > 6){
+              cat(" ....... \n") }
+          }
+)

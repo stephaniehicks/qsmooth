@@ -78,13 +78,13 @@ library(qsmooth)
 
 The main function in the **qsmooth** package is `qsmooth()`.  The `qsmooth()` function needs two objects: 
 (1) a data frame or matrix with observations (e.g. probes or genes) on the rows and samples as the columns 
-(e.g. let's call it `eset`) and (2) a group level factor called `groupFactor` (let's call it `outcome`). 
+(e.g. let's call it `eset`) and (2) a group level factor called `group_factor` (let's call it `outcome`). 
 This order of this factor variable must match the order of the columns in the `eset` object because it contains
  information about which group each sample is from.
 
 To run the `qsmooth()` function, 
 ```
-qs <- qsmooth(object = eset, groupFactor = outcome)
+qs <- qsmooth(object = eset, group_factor = outcome)
 ```
 Individual slots can be extracted using accessor methods:
 ```

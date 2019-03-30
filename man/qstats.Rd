@@ -5,16 +5,16 @@
 \alias{qstats}
 \title{qstats}
 \usage{
-qstats(object, groupFactor, window = 0.05)
+qstats(object, group_factor, window = 0.05)
 }
 \arguments{
 \item{object}{an object which is a data frame or 
 matrix with observations (e.g. probes or genes) on 
 the rows and samples as the columns.}
 
-\item{groupFactor}{a group level continuous or categorial 
+\item{group_factor}{a group level continuous or categorial 
 covariate associated with each sample or column in the 
-\code{object}. The order of the \code{groupFactor} must 
+\code{object}. The order of the \code{group_factor} must 
 match the order of the columns in \code{object}.}
 
 \item{window}{window size for running median which is 
@@ -41,17 +41,17 @@ computes quantile statistics for the function
 \examples{
 library(SummarizedExperiment)
 library(bodymapRat)
-data(bodymapRat)
+bm_dat <- bodymapRat()
 
 # select lung and liver samples, stage 21 weeks, and bio reps
-keepColumns = (colData(bodymapRat)$organ \%in\% c("Lung", "Liver")) & 
-         (colData(bodymapRat)$stage == 21) & 
-         (colData(bodymapRat)$techRep == 1)
-keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
-bodymapRat <- bodymapRat[keepRows,keepColumns]
+keep_columns = (colData(bm_dat)$organ \%in\% c("Lung", "Liver")) & 
+         (colData(bm_dat)$stage == 21) & 
+         (colData(bm_dat)$techRep == 1)
+keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+bm_dat <- bm_dat[keep_rows,keep_columns]
 
-qs <- qstats(object = assay(bodymapRat), 
-             groupFactor = colData(bodymapRat)$organ, 
+qs <- qstats(object = assay(bm_dat), 
+             group_factor = colData(bm_dat)$organ, 
              window = 0.05)
 
 }

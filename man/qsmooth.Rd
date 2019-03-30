@@ -5,17 +5,20 @@
 \alias{qsmooth}
 \title{qsmooth}
 \usage{
-qsmooth(object, groupFactor, batch = NULL, normFactors = NULL,
+qsmooth(object, group_factor, batch = NULL, norm_factors = NULL,
   window = 0.05)
 }
 \arguments{
-\item{object}{an object which is a data frame or 
-matrix with observations (e.g. probes or genes) on 
-the rows and samples as the columns.}
+\item{object}{an object which is a \code{matrix} or 
+\code{data.frame} with observations (e.g. probes or genes) on 
+the rows and samples as the columns. Alternatively, 
+a user can provide a \code{SummarizedExperiment} object
+and the \code{assay(object, "counts")} will be used as input 
+for the qsmooth normalization.}
 
-\item{groupFactor}{a group level continuous or categorial 
+\item{group_factor}{a group level continuous or categorial 
 covariate associated with each sample or column in the 
-\code{object}. The order of the \code{groupFactor} must 
+\code{object}. The order of the \code{group_factor} must 
 match the order of the columns in \code{object}.}
 
 \item{batch}{(Optional) batch covariate (multiple 
@@ -24,15 +27,18 @@ If batch covariate is provided, \code{Combat()} from
 \code{sva} is used prior to qsmooth normalization to 
 remove batch effects. See \code{Combat()} for more details.}
 
-\item{normFactors}{optional normalization scaling factors.}
+\item{norm_factors}{optional normalization scaling factors.}
 
 \item{window}{window size for running median which is 
 a fraction of the number of rows in \code{object}. 
 Default is 0.05.}
 }
 \value{
-A normalized matrix of values after applying 
-smoothed quantile normalization.
+A object of the class \code{qsmooth} that 
+contains a numeric vector of the qsmooth weights in 
+the \code{qsmoothWeights} slot and a matrix of normalized  
+values after applying smoothed quantile normalization in 
+the \code{qsmoothData} slot.
 }
 \description{
 This function applies a generalization of 
@@ -69,17 +75,17 @@ See the vignette for more details.
 \examples{
 library(SummarizedExperiment)
 library(bodymapRat)
-data(bodymapRat)
+bm_dat <- bodymapRat()
 
 # select lung and liver samples, stage 21 weeks, and bio reps
-keepColumns = (colData(bodymapRat)$organ \%in\% c("Lung", "Liver")) & 
-         (colData(bodymapRat)$stage == 21) & 
-         (colData(bodymapRat)$techRep == 1)
-keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
-bodymapRat <- bodymapRat[keepRows,keepColumns]
+keep_columns = (colData(bm_dat)$organ \%in\% c("Lung", "Liver")) & 
+         (colData(bm_dat)$stage == 21) & 
+         (colData(bm_dat)$techRep == 1)
+keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+bm_dat <- bm_dat[keep_rows,keep_columns]
 
-qsNorm <- qsmooth(object = assay(bodymapRat), 
-                  groupFactor = colData(bodymapRat)$organ)
-qsNorm
+qs_norm <- qsmooth(object = assay(bm_dat), 
+                  group_factor = colData(bm_dat)$organ)
+qs_norm
 
 }

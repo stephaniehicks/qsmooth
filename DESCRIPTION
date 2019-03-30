@@ -1,16 +1,15 @@
 Package: qsmooth
 Title: Smooth quantile normalization
-Version: 0.99.2
+Version: 0.99.3
 Authors@R: c(
     person(c("Stephanie", "C."), "Hicks", role = c("aut", "cre"), 
 		email = "shicks19@jhu.edu"),
     person("Kwame", "Okrah", role = "aut"), 
     person("Hector", "Corrada Bravo", role = "aut"), 
     person("Rafael", "Irizarry", role = "aut"))
-Imports: 
-    SummarizedExperiment, 
+Imports: SummarizedExperiment, utils,
     sva, stats, methods, graphics
-Depends: R (>= 3.6.0)
+Depends: R (>= 3.7)
 Suggests: bodymapRat, quantro, knitr, rmarkdown,
     BiocStyle, testthat
 VignetteBuilder: knitr

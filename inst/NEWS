@@ -6,3 +6,10 @@ Changes in version 0.99.2 (2019-03-29)
 + Included Bioconductor installation instructions in README.md file
 + Changed the name of the vignette so user can use `vigentte("qsmooth")`
 + man. Changed the description of the return to reflect the actual output
+
+Changes in version 0.99.3 (2019-03-29)
++ Created a show method to show only first and last three values in the qsmoothWeights function and the head of the qsmoothData normalized matrix
++ Updated all the examples and vignette to use the ExperimentHub bodymapRat data package 
++ Updated documentation in the plots.R file
++ Included argument checking in the qsmooth.R file. Now checks if object is a matrix, data.frame or SummarizedExperiment. 
++ Included functionality for a user providing a SummarizedExperiment and extracting the counts from the assay slot (if it exists).

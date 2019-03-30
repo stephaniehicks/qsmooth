@@ -7,9 +7,9 @@
 #' @param object an object which is a data frame or 
 #' matrix with observations (e.g. probes or genes) on 
 #' the rows and samples as the columns.  
-#' @param groupFactor a group level continuous or categorial 
+#' @param group_factor a group level continuous or categorial 
 #' covariate associated with each sample or column in the 
-#' \code{object}. The order of the \code{groupFactor} must 
+#' \code{object}. The order of the \code{group_factor} must 
 #' match the order of the columns in \code{object}. 
 #' @param window window size for running median which is 
 #' a fraction of the number of rows in \code{object}. 
@@ -35,22 +35,22 @@
 #' @examples
 #' library(SummarizedExperiment)
 #' library(bodymapRat)
-#' data(bodymapRat)
+#' bm_dat <- bodymapRat()
 #' 
 #' # select lung and liver samples, stage 21 weeks, and bio reps
-#' keepColumns = (colData(bodymapRat)$organ %in% c("Lung", "Liver")) & 
-#'          (colData(bodymapRat)$stage == 21) & 
-#'          (colData(bodymapRat)$techRep == 1)
-#' keepRows = rowMeans(assay(bodymapRat)) > 10 # Filter out low counts
-#' bodymapRat <- bodymapRat[keepRows,keepColumns]
+#' keep_columns = (colData(bm_dat)$organ %in% c("Lung", "Liver")) & 
+#'          (colData(bm_dat)$stage == 21) & 
+#'          (colData(bm_dat)$techRep == 1)
+#' keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
+#' bm_dat <- bm_dat[keep_rows,keep_columns]
 #' 
-#' qs <- qstats(object = assay(bodymapRat), 
-#'              groupFactor = colData(bodymapRat)$organ, 
+#' qs <- qstats(object = assay(bm_dat), 
+#'              group_factor = colData(bm_dat)$organ, 
 #'              window = 0.05)
 #' 
 #' @rdname qstats
 #' @export
-qstats <- function(object, groupFactor, window = 0.05)
+qstats <- function(object, group_factor, window = 0.05)
   {
   # Compute sample quantiles
   Q = apply(object, 2, sort) 
@@ -62,10 +62,10 @@ qstats <- function(object, groupFactor, window = 0.05)
   SST = rowSums((Q - Qref)^2)
   
   # Compute SSB
-  if(is.factor(groupFactor)){
-    X = model.matrix(~ 0 + groupFactor)
+  if(is.factor(group_factor)){
+    X = model.matrix(~ 0 + group_factor)
   } else {
-    X = model.matrix(~ groupFactor)
+    X = model.matrix(~ group_factor)
   }
   
   QBETAS = t(solve(t(X) %*% X) %*% t(X) %*% t(Q))
