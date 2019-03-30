@@ -13,3 +13,6 @@ Changes in version 0.99.3 (2019-03-29)
 + Updated documentation in the plots.R file
 + Included argument checking in the qsmooth.R file. Now checks if object is a matrix, data.frame or SummarizedExperiment. 
 + Included functionality for a user providing a SummarizedExperiment and extracting the counts from the assay slot (if it exists).
+
+Changes in version 0.99.4 (2019-03-29)
++ Running `R CMD BiocCheck` gave me a warning unless I used R version 3.7, but then this failed to pass in qsmooth version 0.99.3. So back to R version 3.6
