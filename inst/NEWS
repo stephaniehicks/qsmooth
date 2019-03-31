@@ -16,3 +16,6 @@ Changes in version 0.99.3 (2019-03-29)
 
 Changes in version 0.99.4 (2019-03-29)
 + Running `R CMD BiocCheck` gave me a warning unless I used R version 3.7, but then this failed to pass in qsmooth version 0.99.3. So back to R version 3.6
+
+Changes in version 0.99.5 (2019-03-30)
++ Updating usage examples so R CMD check runs under 5 mins

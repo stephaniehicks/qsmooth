@@ -33,19 +33,10 @@
 #' @importFrom stats model.matrix
 #'
 #' @examples
-#' library(SummarizedExperiment)
-#' library(bodymapRat)
-#' bm_dat <- bodymapRat()
-#' 
-#' # select lung and liver samples, stage 21 weeks, and bio reps
-#' keep_columns = (colData(bm_dat)$organ %in% c("Lung", "Liver")) & 
-#'          (colData(bm_dat)$stage == 21) & 
-#'          (colData(bm_dat)$techRep == 1)
-#' keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
-#' bm_dat <- bm_dat[keep_rows,keep_columns]
-#' 
-#' qs <- qstats(object = assay(bm_dat), 
-#'              group_factor = colData(bm_dat)$organ, 
+#' dat <- cbind(matrix(rnorm(1000), nrow=100, ncol=10), 
+#'              matrix(rnorm(1000, .1, .7), nrow=100, ncol=10))
+#' qs <- qstats(object = dat, 
+#'              group_factor = rep(c(0,1), each=10), 
 #'              window = 0.05)
 #' 
 #' @rdname qstats
