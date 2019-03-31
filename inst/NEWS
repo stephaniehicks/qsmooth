@@ -19,3 +19,7 @@ Changes in version 0.99.4 (2019-03-29)
 
 Changes in version 0.99.5 (2019-03-30)
 + Updating usage examples so R CMD check runs under 5 mins
+
+Changes in version 0.99.6 (2019-03-30)
++ Reducing vignette so R CMD check runs under 5 mins
+

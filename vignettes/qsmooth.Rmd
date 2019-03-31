@@ -143,40 +143,24 @@ levels from 11 organs in male and female rats at 4
 developmental stages. We will use a subset of this data in
 this vignette.
 
-## bodymapRat Example 1 - Comparing male and female rats in one tissue
+## bodymapRat example - Comparing two tissues
 
-The first example is based a dataset which contains
-lung samples from 21 week old male andfemale rats.
-Four samples are from males and four samples are 
-from females.
+This example is based a dataset which contains
+brain and liver tissue samples from 21 week old male 
+and female rats. eight samples are from males and 
+eight samples are from females.
 
 ```{r data-1, message=FALSE, warning=FALSE}
 library(SummarizedExperiment)
 library(bodymapRat)
 bm_dat <- bodymapRat()
 
-# select lung samples, stage 21 weeks, and only bio reps
-keep_columns = (colData(bm_dat)$organ == "Lung") &
-    (colData(bm_dat)$stage == 21) & (colData(bm_dat)$techRep == 1)
-keep_rows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
-bm_dat_e1 <- bm_dat[keep_rows,keep_columns]
-bm_dat_e1
-```
-
-## bodymapRat Example 2 - Comparing two tissues
-
-The second example is based a dataset which contains
-brain and liver tissue samples from 21 week old male 
-and female rats. eight samples are from males and 
-eight samples are from females.
-
-```{r data-2, message=FALSE}
 # select brain and liver samples, stage 21 weeks, and only bio reps
 keepColumns = (colData(bm_dat)$organ %in% c("Brain", "Liver")) &
          (colData(bm_dat)$stage == 21) & (colData(bm_dat)$techRep == 1)
 keepRows = rowMeans(assay(bm_dat)) > 10 # Filter out low counts
-bm_dat_e2 <- bm_dat[keepRows,keepColumns]
-bm_dat_e2
+bm_dat_e1 <- bm_dat[keepRows,keepColumns]
+bm_dat_e1
 ```
 
 # Using the `qsmooth()` function
@@ -214,14 +198,15 @@ Default is 0.05.
 
 ## Running `qsmooth()`
 
-### Using Example 1 data
+### bodymapRat example - Comparing two tissues
 
-In the first example, the groups we are interested 
-in comparing are contained in the `sex` column in 
-the `colData(bm_dat_e1)` dataset. To run the 
+Here, the groups we are interested in comparing 
+are the two types of tissues in the 21 week old
+male and female rats. The groups we are interested 
+in comparing is contained in the `organ` 
+column in the `colData(bm_dat_e1)` dataset. To run the 
 `qsmooth()` function, input the data object and the
-object containing the phenotypic data. Here we use the
-`bm_dat_e1` data set as an example.
+object containing the phenotypic data. 
 
 The first row shows the boxplots and density plot
 of the raw data that has been transformed on the 
@@ -236,37 +221,40 @@ library(quantro)
 
 par(mfrow=c(2,2))
 pd1 <- colData(bm_dat_e1)
-counts1_ercc <- assay(bm_dat_e1)[grepl("^ERCC", 
+counts1 <- assay(bm_dat_e1)[!grepl("^ERCC", 
                       rownames( assay(bm_dat_e1))), ]
-counts1 <- assay(bm_dat_e1)[!grepl("^ERCC",
-                      rownames( assay(bm_dat_e1))), ]
+pd1$group <- paste(pd1$organ, pd1$sex, sep="_")
 
-matboxplot(log2(counts1+1), groupFactor = pd1$sex,
+matboxplot(log2(counts1+1), groupFactor = factor(pd1$organ),
            main = "Raw data", xaxt="n", 
            ylab = "Expression (log2 scale)")
-axis(1, at=seq_len(length(pd1$sex)), labels=FALSE)
-text(seq_len(length(pd1$sex)), par("usr")[3] -1, 
-     labels = pd1$sex, srt = 90, pos = 1, xpd = TRUE)
+axis(1, at=seq_len(length(as.character(pd1$organ))),
+     labels=FALSE)
+text(seq_len(length(pd1$organ)), par("usr")[3] -2, 
+     labels = pd1$organ, srt = 90, pos = 1, xpd = TRUE)
 
-matdensity(log2(counts1+1), groupFactor = pd1$sex, 
-           main = "Raw data", ylab = "density", 
+matdensity(log2(counts1+1), groupFactor = pd1$organ, 
+           main = "Raw data", ylab= "density",
            xlab = "Expression (log2 scale)")
-legend('topright', levels(factor(pd1$sex)), 
+legend('topright', levels(factor(pd1$organ)), 
        col = 1:2, lty = 1)
 
-qs_norm_e1 <- qsmooth(object = counts1, group_factor = pd1$sex)
-matboxplot(log2(qsmoothData(qs_norm_e1)+1), groupFactor = pd1$sex,
-           main = "qsmooth normalized data", ylab = "Expression (log2 scale)",
-           xaxt="n")
-axis(1, at=seq_len(length(pd1$sex)), labels=FALSE)
-text(seq_len(length(pd1$sex)), par("usr")[3] -1, labels = pd1$sex, 
-     srt = 90, pos = 1, xpd = TRUE)
-matdensity(log2(qsmoothData(qs_norm_e1)+1), groupFactor = pd1$sex,
+qs_norm_e1 <- qsmooth(object = counts1, group_factor = pd1$organ)
+qs_norm_e1 
+
+matboxplot(log2(qsmoothData(qs_norm_e1)+1), 
+           groupFactor = pd1$organ, xaxt="n",
+           main = "qsmooth normalized data", 
+           ylab = "Expression (log2 scale)")
+axis(1, at=seq_len(length(pd1$organ)), labels=FALSE)
+text(seq_len(length(pd1$organ)), par("usr")[3] -2, 
+     labels = pd1$organ, srt = 90, pos = 1, xpd = TRUE)
+
+matdensity(log2(qsmoothData(qs_norm_e1)+1), groupFactor = pd1$organ,
            main = "qsmooth normalized data",
            xlab = "Expression (log2 scale)", ylab = "density")
-legend('topright', levels(factor(pd1$sex)), col = 1:2, lty = 1)
+legend('topright', levels(factor(pd1$organ)), col = 1:2, lty = 1)
 ```
-
 
 The smoothed quantile normalized data can be 
 extracted using the` qsmoothData()` function
@@ -285,84 +273,6 @@ weight of 0 indicates quantile normalization
 within the groups is applied. See the Figure 1 
 for more details on the weights.
 
-In this example, the weights are close to 1 
-across all the quantiles indicating that there 
-is no major difference between the group-level
-quantiles in the female and male rats. Here, 
-the `qsmooth()` normalization method returns a
-normalized data set that is nearly identical
-to the conventional quantile normalization.
-
-
-### Using Example 2 data
-
-In the second example (`bm_dat_e2`), the
-groups we are interested in comparing are the
-two types of tissues in the 21 week old male
-and female rats.
-
-Similar to the first example, the first row
-shows the boxplots and density plot of the
-raw data that has been transformed on
-the `log2()` scale and added a pseudo-count 
-of 1 (i.e. `log2(counts+1)`). The second 
-row shows the boxplots and density plot 
-of the qsmooth normalized data.
-
-```{r calculate-qsmooth2, fig.height=10, fig.width=10}
-par(mfrow=c(2,2))
-pd2 <- colData(bm_dat_e2)
-counts2 <- assay(bm_dat_e2)[!grepl("^ERCC", 
-                      rownames( assay(bm_dat_e2))), ]
-pd2$group <- paste(pd2$organ, pd2$sex, sep="_")
-
-matboxplot(log2(counts2+1), groupFactor = factor(pd2$organ),
-           main = "Raw data", xaxt="n", 
-           ylab = "Expression (log2 scale)")
-axis(1, at=seq_len(length(as.character(pd2$organ))),
-     labels=FALSE)
-text(seq_len(length(pd2$organ)), par("usr")[3] -2, 
-     labels = pd2$organ, srt = 90, pos = 1, xpd = TRUE)
-
-matdensity(log2(counts2+1), groupFactor = pd2$organ, 
-           main = "Raw data", ylab= "density",
-           xlab = "Expression (log2 scale)")
-legend('topright', levels(factor(pd2$organ)), 
-       col = 1:2, lty = 1)
-
-qs_norm_e2 <- qsmooth(object = counts2, group_factor = pd2$organ)
-matboxplot(log2(qsmoothData(qs_norm_e2)+1), 
-           groupFactor = pd2$organ, xaxt="n",
-           main = "qsmooth normalized data", 
-           ylab = "Expression (log2 scale)")
-axis(1, at=seq_len(length(pd2$organ)), labels=FALSE)
-text(seq_len(length(pd2$organ)), par("usr")[3] -2, 
-     labels = pd2$organ, srt = 90, pos = 1, xpd = TRUE)
-
-matdensity(log2(qsmoothData(qs_norm_e2)+1), groupFactor = pd2$organ,
-           main = "qsmooth normalized data",
-           xlab = "Expression (log2 scale)", ylab = "density")
-legend('topright', levels(factor(pd2$organ)), col = 1:2, lty = 1)
-```
-
-We see there are global differences in the 
-distributions between the two tissues (liver
-and brain) in the rats.
-
-The smoothed quantile normalized data can be
-extracted using the `qsmoothData()` function
-(see above) and the smoothed quantile weights
-can plotted using the `qsmoothPlotWeights()`
-function (see below).
-
-```{r plot-qsmooth2-weights}
-qsmoothPlotWeights(qs_norm_e2)
-```
-
-Recall, a weight of 1 indicates quantile 
-normalization is applied, where as a weight of 
-0 indicates quantile normalization within the
-groups is applied.
 
 In this example, the weights range from 0.2 
 to 0.8 across the quantiles, where the weights 
@@ -376,6 +286,11 @@ necessarily appropriate). As the quantiles get
 bigger, there is less variability between groups 
 which increases the weight closer to 0.8 as the 
 quantiles get bigger.
+
+However, if the weights are close to 1 
+across all the quantiles, this indicates that there 
+is no major difference between the group-level
+quantiles in the two groups 
 
 # References
 
