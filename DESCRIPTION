@@ -1,12 +1,15 @@
 Package: qsmooth
 Title: Smooth quantile normalization
-Version: 0.99.8
+Version: 0.99.9
 Authors@R: c(
     person(c("Stephanie", "C."), "Hicks", role = c("aut", "cre"), 
-		email = "shicks19@jhu.edu"),
+		email = "shicks19@jhu.edu", 
+		comment = c(ORCID = "0000-0002-7858-0231")),
     person("Kwame", "Okrah", role = "aut"), 
-    person("Hector", "Corrada Bravo", role = "aut"), 
-    person("Rafael", "Irizarry", role = "aut"))
+    person("Hector", "Corrada Bravo", role = "aut", 
+		comment = c(ORCID = "0000-0002-1255-4444")), 
+    person("Rafael", "Irizarry", role = "aut"), 
+		comment = c(ORCID = "0000-0002-3944-4309"))
 Imports: SummarizedExperiment, utils,
     sva, stats, methods, graphics
 Depends: R (>= 3.6.0)
