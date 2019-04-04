@@ -3,10 +3,8 @@ title: "The qsmooth user's guide"
 author: 
 - name: Stephanie Hicks
     affiliation: Johns Hopkins Bloomberg School of Public Health
-    email: shicks19@jhu.edu
 - name: Kwame Okrah
     affiliation: Genentech
-    email: kwame.okrah@gmail.com
 - name: Joseph Paulson
     affiliation: Genentech
 - name: John Quackenbush
@@ -15,26 +13,31 @@ author:
     affiliation: Dana-Farber Cancer Institute
 - name: Hector Corrada Bravo
     affiliation: University of Maryland
-date: Feburary 05, 2019
-package: bodymapRat
-output: html_document
-bibliography: qsmoothRef.bib
-vignette: >
-    %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::html_document:
+    toc_float: true
+package: qsmooth
+abstract: |
+ Smooth quantile normalization
+    is a generalization of quantile normalization,
+    which is average of the two types of assumptions
+    about the data generation process: quantile
+    normalization and quantile normalization between
+    groups.
+vignette: |
+  %\VignetteIndexEntry{The qsmooth user's guide}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r, echo=FALSE, results="hide", message=FALSE}
+require(knitr)
+opts_chunk$set(error=FALSE, message=FALSE, warning=FALSE)
 ```
 
-```{r style, echo = FALSE, results = 'asis'}
+```{r style, echo=FALSE, results='asis'}
 BiocStyle::markdown()
 ```
 
-<!--
-    % \VignetteEngine{knitr::knitr}
-    %\VignetteIndexEntry{The qsmooth data user's guide}
--->
 
 ## Introduction
 
