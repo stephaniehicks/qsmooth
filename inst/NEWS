@@ -35,4 +35,6 @@ Changes in version 0.99.9 (2019-04-04)
 Changes in version 0.99.10 (2019-04-04)
 + Fixed typo in ORCID
 
+Changes in version 0.99.11 (2019-04-09)
++ Fixed bug YAML in vignette causing an error on bioc nightly builds
 

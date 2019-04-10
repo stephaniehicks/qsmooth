@@ -1,29 +1,28 @@
 ---
 title: "The qsmooth user's guide"
-author: 
-- name: Stephanie Hicks
-    affiliation: Johns Hopkins Bloomberg School of Public Health
+author:
+- name: Stephanie C. Hicks
+  affiliation: Johns Hopkins Bloomberg School of Public Health
 - name: Kwame Okrah
-    affiliation: Genentech
-- name: Joseph Paulson
-    affiliation: Genentech
-- name: John Quackenbush
-    affiliation: Harvard T.H. Chan School of Public Health
-- name: Rafael A. Irizarry
-    affiliation: Dana-Farber Cancer Institute
-- name: Hector Corrada Bravo
-    affiliation: University of Maryland
+  affiliation: Genentech
+- name: Joseph Paulson 
+  affiliation: Genentech
+- name: John Quackenbush 
+  affiliation: Harvard T.H. Chan School of Public Health
+- name: Rafael A. Irizarry 
+  affiliation: Dana-Farber Cancer Institute
+- name: Hector Corrada-Bravo
+  affiliation: University of Maryland
 output:
   BiocStyle::html_document:
     toc_float: true
 package: qsmooth
 abstract: |
  Smooth quantile normalization
-    is a generalization of quantile normalization,
-    which is average of the two types of assumptions
-    about the data generation process: quantile
-    normalization and quantile normalization between
-    groups.
+   is a generalization of quantile normalization, 
+   which is average of the two types of assumptions 
+   about the data generation process: quantile normalization
+   and quantile normalization between groups.
 vignette: |
   %\VignetteIndexEntry{The qsmooth user's guide}
   %\VignetteEngine{knitr::rmarkdown}
