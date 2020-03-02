@@ -4,8 +4,12 @@
 \alias{qsmoothPlotWeights}
 \title{Plot weights from \code{qsmooth} function.}
 \usage{
-qsmoothPlotWeights(object, xLab = "quantiles", yLab = "weights",
-  mainLab = "qsmooth weights")
+qsmoothPlotWeights(
+  object,
+  xLab = "quantiles",
+  yLab = "weights",
+  mainLab = "qsmooth weights"
+)
 }
 \arguments{
 \item{object}{a qsmooth object from \code{qsmooth}}

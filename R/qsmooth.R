@@ -81,8 +81,8 @@ qsmooth <- function(object, group_factor,
                     window = 0.05)
 {
 
-  if(!(class(object) %in% c("matrix", "data.frame", 
-                       "SummarizedExperiment"))){
+  if(!any(is(object, "matrix") | is(object, "data.frame") |
+     is(object, "SummarizedExperiment"))){
     stop("The class of the object must be a matrix, 
          data.frame or SummarizedExperiment")
   }

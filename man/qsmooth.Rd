@@ -5,8 +5,7 @@
 \alias{qsmooth}
 \title{qsmooth}
 \usage{
-qsmooth(object, group_factor, batch = NULL, norm_factors = NULL,
-  window = 0.05)
+qsmooth(object, group_factor, batch = NULL, norm_factors = NULL, window = 0.05)
 }
 \arguments{
 \item{object}{an object which is a \code{matrix} or 
