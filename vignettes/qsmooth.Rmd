@@ -41,34 +41,34 @@ BiocStyle::markdown()
 ## Introduction
 
 Global normalization methods such as quantile normalization
-@Bolstad2003, @Irizarry2003 have become a standard part of the
+[@Bolstad2003], [@Irizarry2003] have become a standard part of the
 analysis pipeline for high-throughput data to remove unwanted
 technical variation. These methods and others that rely solely
 on observed data without external information (e.g. spike-ins)
 are based on the assumption that only a minority of genes are
 expected to be differentially expressed (or that an equivalent
 number of genes increase and decrease across biological conditions
-@aanes2014normalization). This assumption can be interepreted
+[@aanes2014normalization]). This assumption can be interpreted
 in different ways leading to different global normalization
 procedures. For example, in one normalization procedure, the method assumes
 the mean expression level across genes should be the same across samples
-@Robinson2010. In contrast, quantile normalization assumes the
+[@Robinson2010]. In contrast, quantile normalization assumes the
 only difference between the statistical distribution of each sample
 is technical variation. Normalization is achieved by forcing the
 observed distributions to be the same and the average distribution,
 obtained by taking the average of each quantile across samples,
-is used as the reference @Bolstad2003.
+is used as the reference [@Bolstad2003].
 
 While these assumptions may be reasonable in certain experiments,
-they may not always be appropriate @Loven2012, @Hicks2015.
+they may not always be appropriate [@Loven2012], [@Hicks2015].
 For example, mRNA content has been shown to fluctuate significantly
-during zebrafish early developmental stages @aanes2014normalization.
-Similarily, cells expressing high levels of c-Myc undergo
+during zebrafish early developmental stages [@aanes2014normalization].
+Similarly, cells expressing high levels of c-Myc undergo
 transcriptional amplification causing a 2 to 3 fold change in global
-gene expression compared to cells expressiong low c-Myc
-@Loven2012.
+gene expression compared to cells expressing low c-Myc
+[@Loven2012].
 
-Recently, an R/Biocoductor package (`quantro`) @Hicks2015
+Recently, an R/Bioconductor package (`quantro`) [@Hicks2015]
 has been developed to test for global differences between groups of
 distributions to evaluate whether global normalization methods such
 as quantile normalization should be applied. If global differences
@@ -114,7 +114,8 @@ as follows:
 
 $$
 w_{(g)} = \hbox{median} \{1 - \hbox{SSB}_{(i)} / \hbox{SST}_{(i)} 
-            | ~i = g-k, \dots, g, \dots, g+k \} $$
+            | ~i = g-k, \dots, g, \dots, g+k \} 
+$$
 where $k=$ floor(Total number of genes * 0.05). The number
 0.05 is a flexible parameter that can be altered to change the
 window of the number of genes considered. In this way, we
@@ -293,6 +294,68 @@ However, if the weights are close to 1
 across all the quantiles, this indicates that there 
 is no major difference between the group-level
 quantiles in the two groups 
+
+## Running `qsmoothGC`
+
+In many high-throughput experiments, a sample-specific GC-content effect
+can be observed. Due to this technical variability that differs between samples,
+it can obscure comparisons across (sets of) samples.
+[@VandenBerge2021] propose a method based on smooth quantile normalization,
+where the `qsmooth` procedure is adopted separately across bins of features that
+have been grouped according to their GC-content values.
+This procedure has been implemented in `qsmoothGC`, which can be used in
+similar vein as the `qsmooth` function. It has three additional arguments:
+ - `gc` to define the GC-content values of each feature.
+ - `nGroups` to define the number of groups within which `qsmooth` normalization
+ is adopted.
+ - `round` to define whether the normalized data should be rounded.
+ 
+```{r}
+par(mfrow=c(2,2))
+pd1 <- colData(bm_dat_e1)
+counts1 <- assay(bm_dat_e1)[!grepl("^ERCC", 
+                      rownames( assay(bm_dat_e1))), ]
+pd1$group <- paste(pd1$organ, pd1$sex, sep="_")
+
+matboxplot(log2(counts1+1), groupFactor = factor(pd1$organ),
+           main = "Raw data", xaxt="n", 
+           ylab = "Expression (log2 scale)")
+axis(1, at=seq_len(length(as.character(pd1$organ))),
+     labels=FALSE)
+text(seq_len(length(pd1$organ)), par("usr")[3] -2, 
+     labels = pd1$organ, srt = 90, pos = 1, xpd = TRUE)
+
+matdensity(log2(counts1+1), groupFactor = pd1$organ, 
+           main = "Raw data", ylab= "density",
+           xlab = "Expression (log2 scale)")
+legend('topright', levels(factor(pd1$organ)), 
+       col = 1:2, lty = 1)
+
+# retrieved GC-content using EDASeq:
+# gc <- EDASeq::getGeneLengthAndGCContent(id = rownames(bm_dat_e1), 
+#                                   org = "rno")
+data(gc, package="qsmooth")
+
+gcContent <- gc[rownames(counts1),2]
+keep <- names(gcContent)[!is.na(gcContent)]
+qs_norm_gc <- qsmoothGC(object = counts1[keep,], gc=gcContent[keep], 
+                        group_factor = pd1$organ)
+qs_norm_gc 
+
+matboxplot(log2(qsmoothData(qs_norm_gc)+1), 
+           groupFactor = pd1$organ, xaxt="n",
+           main = "qsmoothGC normalized data", 
+           ylab = "Expression (log2 scale)")
+axis(1, at=seq_len(length(pd1$organ)), labels=FALSE)
+text(seq_len(length(pd1$organ)), par("usr")[3] -2, 
+     labels = pd1$organ, srt = 90, pos = 1, xpd = TRUE)
+
+matdensity(log2(qsmoothData(qs_norm_gc)+1), groupFactor = pd1$organ,
+           main = "qsmoothGC normalized data",
+           xlab = "Expression (log2 scale)", ylab = "density")
+legend('topright', levels(factor(pd1$organ)), col = 1:2, lty = 1)
+```
+
 
 # References
 

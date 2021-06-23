@@ -22,10 +22,9 @@
 
 #' @title qsmoothGC
 #' 
-#' @description This function applies a generalization of 
-#' quantile normalization called smoothed quantile 
-#' normalization. This function defines the qsmooth class 
-#' and constructor. 
+#' @description This function applies smoothed quantile 
+#' normalization separately for groups of features that are
+#' binned according to their GC-content.
 #'
 #' @param object an object which is a \code{matrix} or 
 #' \code{data.frame} with observations (e.g. probes or genes) on 
@@ -33,7 +32,8 @@
 #' a user can provide a \code{SummarizedExperiment} object
 #' and the \code{assay(object, "counts")} will be used as input 
 #' for the qsmooth normalization.
-#' @param gc GC-content of the features.
+#' @param gc GC-content of the features, ordered according to the features 
+#' in \code{object}.
 #' @param group_factor a group level continuous or categorial 
 #' covariate associated with each sample or column in the 
 #' \code{object}. The order of the \code{group_factor} must 
@@ -63,6 +63,10 @@
 #' dat_qs <- qsmoothGC(object = dat, 
 #'                    gc = gc,
 #'                    group_factor = rep(c(0,1), each=10))
+#' 
+#' @references 
+#' Van den Berge K., Chou H., Roux de Bézieux H., Street K., Risso D., Ngai J., Dudoit S. Normalization benchmark of ATAC-seq datasets shows the 
+#' importance of accounting for GC-content effects. https://www.biorxiv.org/content/10.1101/2021.01.26.428252v2
 #' 
 #' @rdname qsmoothGC
 #' @export
