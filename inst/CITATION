@@ -14,3 +14,16 @@ bibentry(bibtype = "Article",
            pubmed = "29036413",
 	   header = "The qsmooth package is described in:")
 
+bibentry(bibtype = "Article",
+           key = "qsmoothGC",
+           author = c(person("Koen", "Van den Berge"),
+                      person("Hsin-Jung", "Chou"), 
+                      person("Hector", "Roux de Bezieux"), 
+                      person("Kelly", "Street"),              
+                      person("Davide", "Risso"), 
+                      person("John", "Ngai"),
+                      person("Sandrine", "Dudoit")),
+           title = "Normalization benchmark of ATAC-seq datasets shows the importance of accounting for GC-content effects",
+           journal = "bioRxiv",
+           year = "2021",
+	   header = "The qsmoothGC functionlity is described in:")
