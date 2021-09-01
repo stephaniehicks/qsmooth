@@ -44,3 +44,5 @@ Changes in version 1.3.1 (2020-03-01)
 Changes in version 1.9.1 (2021-06-24)
 + Added qsmoothGC function (Contributed from Koen Van den Berge)
 
+Changes in version 1.9.2. (2021-09-01)
++ Added Hmisc to Imports
