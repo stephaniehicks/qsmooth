@@ -1,6 +1,6 @@
 Package: qsmooth
 Title: Smooth quantile normalization
-Version: 1.11.0
+Version: 1.12.0
 Authors@R: c(
     person(c("Stephanie", "C."), "Hicks", role = c("aut", "cre"), 
 		email = "shicks19@jhu.edu", 
