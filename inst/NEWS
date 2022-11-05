@@ -46,3 +46,6 @@ Changes in version 1.9.1 (2021-06-24)
 
 Changes in version 1.9.2. (2021-09-01)
 + Added Hmisc to Imports
+
+Changes in version 1.15.1 (2022-11-04)
++ Removed CC BY 4.0 license and replaced with GPL-3

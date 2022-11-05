@@ -1,6 +1,6 @@
 Package: qsmooth
 Title: Smooth quantile normalization
-Version: 1.15.0
+Version: 1.15.1
 Authors@R: c(
     person(c("Stephanie", "C."), "Hicks", role = c("aut", "cre"), 
 		email = "shicks19@jhu.edu", 
@@ -19,7 +19,7 @@ Suggests: bodymapRat, quantro, knitr, rmarkdown,
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Encoding: UTF-8
-License: CC BY 4.0
+License: GPL-3
 Description: Smooth quantile normalization
     is a generalization of quantile normalization,
     which is average of the two types of assumptions
